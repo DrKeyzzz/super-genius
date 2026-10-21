@@ -21,3 +21,6 @@ Window always moving; right answers (only) fly you further from Earth; sample pi
 
 ## 2026-10-21 evening: home page placement (hub 53d7579, super-test 177f170)
 Gold border around the six games, challenge plate at top center, red Leaderboard button -> ../super-test/#leaderboard. Hub publish must wait for the game publish.
+
+## 2026-10-21 evening: Sharp or Flat channel = 5 harder questions, no replay (8d350ec)
+SF_STEPS in channel-bridge.js (tier 1: 50-12 cents, tier 2: 30-7, tier 3: 18-3). One miss loses the channel. 15/15 brain checks pass.
