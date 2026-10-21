@@ -38,5 +38,5 @@
  $('quit').onclick=()=>{if(!run)return;removeFrame();if(!run.lab){saved.flight=null;persist()}home()};
  $('boardBtn').onclick=()=>{if(run)return;show('board');$('records').replaceChildren();tiers.forEach((t,i)=>{const a=document.createElement('article'),b=document.createElement('b'),s=document.createElement('span');b.textContent=t.name;const rec=saved.best[i];s.textContent=rec?`${rec.correct}/${catalog.length} correct · ${rec.won?'Rank earned':'Flight ended'} · ${new Date(rec.at).toLocaleDateString()}`:'No flight yet';a.append(b,s);$('records').append(a)})};$('boardBack').onclick=home;
  tiers.forEach((t,i)=>{const o=new Option(t.name,String(i));$('labTier').add(o)});catalog.forEach(c=>$('labChannel').add(new Option(c.name+' · '+c.label,c.id)));
- addEventListener('message',receive);addEventListener('pagehide',saveFlight);home();
+ addEventListener('message',receive);addEventListener('pagehide',saveFlight);home();if(location.hash==='#leaderboard')$('boardBtn').click();   // the home page's red Leaderboard button opens straight to the board
 })();
