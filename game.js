@@ -3,7 +3,7 @@
  const {catalog,tiers,deck,config}=GeniusCatalog,$=id=>document.getElementById(id);
  const key='mtg_super_genius_v1';let saved;try{saved=JSON.parse(localStorage.getItem(key)||'null')}catch{}saved=saved&&saved.version===1?saved:{version:1,unlocked:0,earned:[],best:[],flight:null};
  // ?unlock=all opens every tier (for trying the top tier; gate this to teachers or remove it before publishing)
- if(new URLSearchParams(location.search).get('unlock')==='all'){saved.unlocked=2}
+ try{if(new URLSearchParams(location.search).get('unlock')==='all')saved.unlocked=2}catch{}
  let selected=0,run=null,frame=null,current=null,token='',settled=false,bootTimer=null,loaded=false,feedbackTimer=null;
  function persist(){try{localStorage.setItem(key,JSON.stringify(saved))}catch{$('liveStatus').textContent='Storage unavailable · keep this tab open'}}
  function show(id){['lobby','channelHost','switching','feedback','finish','board'].forEach(x=>$(x).hidden=x!==id)}
