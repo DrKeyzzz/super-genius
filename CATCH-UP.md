@@ -27,3 +27,6 @@ SF_STEPS in channel-bridge.js (tier 1: 50-12 cents, tier 2: 30-7, tier 3: 18-3).
 
 ## 2026-10-21 night: ?unlock=all (test only)
 ?unlock=all opens all three tiers. MUST be gated to teachers or removed before publishing.
+
+## 2026-10-21 night: ?unlock=all (test only)
+?unlock=all opens all three tiers. MUST be gated to teachers or removed before publishing.
