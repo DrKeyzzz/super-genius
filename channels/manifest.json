@@ -1,0 +1,26 @@
+{
+  "scale-quest": {
+    "source": "scale-quest/index.html",
+    "sha256": "1ee0a7f0cffe14e75753c07805be3576ef2fcc0b0c67ac63670bf16f1db8a949"
+  },
+  "tidal-tones": {
+    "source": "tidal-tones/index.html",
+    "sha256": "88ceead3412ecd42fa75a268fe74df37f46e1555ac13b2a7faad75aaa2bdbf79"
+  },
+  "earshot-saloon": {
+    "source": "earshot-saloon/index.html",
+    "sha256": "cdcd9421a0ec585d395f8c9be41adc0c0d30619d099412d1b4aa1c7f8ca16a7a"
+  },
+  "brainwaves": {
+    "source": "brainwaves/index.html",
+    "sha256": "3b1e7c65860b0e48465bd8d7b0a29c243d5d9d8ffded48de3dc48a6daacf6fb5"
+  },
+  "rhythm-trainer": {
+    "source": "rhythm-trainer/index.html",
+    "sha256": "4c203f8acf0b109022617318514adf33430da54fec611d2777545bc357142c56"
+  },
+  "rooftop-runner": {
+    "source": "rooftop-runner/index.html",
+    "sha256": "415fbecc74a8218772aa9d48fd3d0e9c4824bba00564a8c6c748d6e9ada95e48"
+  }
+}

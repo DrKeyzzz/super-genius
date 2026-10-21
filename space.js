@@ -1,0 +1,18 @@
+'use strict';
+window.SpaceFlight=(()=>{
+ const cv=document.getElementById('space'),cx=cv.getContext('2d');let w,h,dpr,last=0,z=0,target=0,boost=0,blast=0,confetti=0;
+ const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+ const planets=[{at:.1,n:'Moon',r:16,c:'#c7cbd3'},{at:.24,n:'Mars',r:18,c:'#cd7054'},{at:.38,n:'Asteroid belt',r:4,c:'#9e8874'},{at:.52,n:'Jupiter',r:38,c:'#d6ad86'},{at:.65,n:'Saturn',r:30,c:'#dfca91',ring:1},{at:.77,n:'Uranus',r:23,c:'#90d1d9'},{at:.88,n:'Neptune',r:24,c:'#5376df'},{at:.98,n:'Beyond',r:8,c:'#d8c4ab'}];
+ const stars=Array.from({length:110},()=>({x:Math.random(),y:Math.random(),a:Math.random(),s:.4+Math.random()*1.3}));
+ function size(){const b=cv.getBoundingClientRect();w=b.width;h=b.height;dpr=Math.min(devicePixelRatio||1,2);cv.width=w*dpr;cv.height=h*dpr}new ResizeObserver(size).observe(cv);size();
+ function orb(x,y,r,c,ring=false){if(r<.2)return;const g=cx.createRadialGradient(x-r*.35,y-r*.35,r*.05,x,y,r);g.addColorStop(0,c);g.addColorStop(.6,c);g.addColorStop(1,'#071121');if(ring){cx.strokeStyle='#e6d4a485';cx.lineWidth=r*.18;cx.beginPath();cx.ellipse(x,y,r*1.9,r*.4,-.25,0,Math.PI*2);cx.stroke()}cx.fillStyle=g;cx.beginPath();cx.arc(x,y,r,0,Math.PI*2);cx.fill()}
+ function frame(t){requestAnimationFrame(frame);let dt=Math.min(.05,(t-last)/1000)||.016;last=t;z+=(target-z)*Math.min(1,dt*(reduced?8:.8));boost=Math.max(0,boost-dt);blast=Math.max(0,blast-dt);confetti=Math.max(0,confetti-dt);cx.setTransform(dpr,0,0,dpr,0,0);cx.fillStyle='#030915';cx.fillRect(0,0,w,h);
+  const vp={x:w*.53,y:h*.55};stars.forEach(s=>{const d=1+((z*12+s.a*4)%4),x=vp.x+(s.x-.5)*w*3/d,y=vp.y+(s.y-.5)*h*3/d;cx.fillStyle='#d3e4f6';cx.globalAlpha=.3+s.a*.6;cx.beginPath();cx.arc(x,y,s.s,0,7);cx.fill();if(boost&&!reduced){cx.strokeStyle='#b7ddff';cx.beginPath();cx.moveTo(x,y);cx.lineTo(x+(x-vp.x)*.08,y+(y-vp.y)*.08);cx.stroke()}});cx.globalAlpha=1;
+  const er=h*.76/(1+z*42),ex=vp.x+er*.16,ey=vp.y+er*.2;orb(ex,ey,er,'#4d9bdf');cx.save();cx.beginPath();cx.arc(ex,ey,er,0,7);cx.clip();cx.fillStyle='#4e9e82';[[-.25,-.25,.3],[.28,.2,.25],[-.04,.55,.18]].forEach(([x,y,r])=>{cx.beginPath();cx.ellipse(ex+x*er,ey+y*er,r*er,r*er*.7,.3,0,7);cx.fill()});cx.restore();
+  planets.forEach((p,i)=>{const age=z-p.at;if(age<0||age>.24)return;const d=1+age*70,angle=i*2.2,r=p.r*5/d,x=vp.x+Math.cos(angle)*w*.7/d,y=vp.y+Math.sin(angle)*h*1.2/d;orb(x,y,r,p.c,p.ring);if(p.n==='Jupiter'){cx.strokeStyle='#9c6848';cx.lineWidth=r*.09;cx.beginPath();cx.moveTo(x-r*.7,y);cx.lineTo(x+r*.7,y);cx.stroke()}});
+  if(blast){cx.fillStyle=`rgba(255,${Math.floor(60+blast*60)},30,${Math.min(.95,blast*.5)})`;cx.fillRect(0,0,w,h);for(let i=0;i<40;i++){const a=i*2.399,rr=(2.4-blast)*(30+i*5);cx.fillStyle=i%2?'#ffdf90':'#a2b2c5';cx.fillRect(vp.x+Math.cos(a)*rr,vp.y+Math.sin(a)*rr,5+i%7,4)}}
+  if(confetti){cx.fillStyle='#ffe6a5';for(let i=0;i<65;i++){const x=(i*137.5)%w,y=((t/12+i*35)%h);cx.fillRect(x,y,3,7)}}
+ }
+ requestAnimationFrame(frame);
+ return {travel(v){target=Math.max(0,Math.min(1.1,v));const p=planets.filter(p=>p.at<=target).at(-1);document.getElementById('location').textContent=p?p.n.toUpperCase()+' PASSAGE':'EARTH DEPARTURE';document.getElementById('orbitLabel').textContent=target<.02?'Earth falls away behind you.':(planets.find(p=>p.at>target)?.n?'Next · '+planets.find(p=>p.at>target).n:'Beyond the solar system')},boost(){boost=1.8},impact(dead){blast=dead?2.4:.5},celebrate(){confetti=12;target=1.1},reset(){target=0;blast=0;z=0;document.getElementById('location').textContent='EARTH DEPARTURE';document.getElementById('orbitLabel').textContent='Your next great leap.'}};
+})();
