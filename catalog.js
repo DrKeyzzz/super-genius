@@ -19,7 +19,7 @@
  ['brain','intervals','Intervals by ear','Name the interval you hear. Later tiers include descending and harmonic intervals.'],
  ['roof','notes','Rooftop sight reading','Two bars of pitched sight reading. Use the on-screen piano or its keyboard shortcuts; hold notes for their written length.'],
  ['tidal','piano','Play the boats','Read three staff notes and play them on the piano in the exact octave.'],
- ['brain','synapse','Sharp or Flat?','Listen to two pitches. Is the second sharp or flat? The top tier reaches the native Hairline level.'],
+ ['brain','synapse','Sharp or Flat?','Five questions, each closer than the last. Two pitches play once (no replays): was the second sharp or flat? Miss one and the channel is lost. The top tier ends at Hairline, 3 cents.'],
  ['scale','degree-name','Name the degree','Read the shown staff note or piano key and identify its scale degree.'],
  ['ear','noon','High Noon','A masked outlaw plays an interval. Pick the matching card before the native showdown clock expires.']
  ];

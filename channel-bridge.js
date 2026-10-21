@@ -3,7 +3,13 @@
  const engine=document.body.dataset.superEngine;let config=null,done=false,active=false,progress=0,total=0,errors=0;
  const send=(type,data={})=>parent.postMessage({superGenius:true,token:config?.token,type,...data},location.origin);
  function finish(ok,detail=''){if(done||!active)return;done=true;send('result',{ok:!!ok,detail});setTimeout(()=>window.superAudioStop(),1800)}
- function atom(ok){if(done||!active)return;progress++;if(!ok)errors++;if(engine==='tidal-tones'){if(!ok||progress>=config.count)finish(ok,`${progress-errors}/${progress} boats`)}else if(!['rooftop-runner','rhythm-trainer'].includes(engine))finish(ok);}
+ // Sharp or Flat?: five questions, each closer than the last, no replays. A miss loses the challenge; five right clears it.
+ const SF_STEPS=[[50,35,25,18,12],[30,20,14,10,7],[18,12,8,5,3]],SF_N=5;
+ function sfLabel(){let el=document.getElementById('super-sf');if(!el){el=document.createElement('div');el.id='super-sf';el.style.cssText='position:fixed;top:10px;left:50%;transform:translateX(-50%);z-index:2147483646;background:#07121fe6;border:1px solid #a5e7d8;color:#e8f6ff;border-radius:999px;padding:6px 16px;font:700 14px system-ui;letter-spacing:.04em;pointer-events:none';document.body.append(el)}
+  const c=SF_STEPS[config.tier][Math.min(progress,SF_N-1)];el.textContent=`Question ${Math.min(progress+1,SF_N)} of ${SF_N} · ±${c} cents · no replays`}
+ function atom(ok){if(done||!active)return;progress++;if(!ok)errors++;
+  if(engine==='brainwaves'&&config.kind==='synapse'){if(!ok)finish(false,`Missed question ${progress} of ${SF_N} (±${SF_STEPS[config.tier][progress-1]} cents)`);else if(progress>=SF_N)finish(true,`${SF_N}/${SF_N} right, down to ±${SF_STEPS[config.tier][SF_N-1]} cents`);else setTimeout(()=>{if(done)return;sfLabel();S.phase='result';nextRound()},1300);return}
+  if(engine==='tidal-tones'){if(!ok||progress>=config.count)finish(ok,`${progress-errors}/${progress} boats`)}else if(!['rooftop-runner','rhythm-trainer'].includes(engine))finish(ok);}
  // Existing game history callbacks provide the answer's native grading decision.
  if(typeof MTG_HIST!=='undefined')MTG_HIST.note=(game,labels,ok)=>atom(ok);
  const hide=sel=>document.querySelectorAll(sel).forEach(e=>e.style.setProperty('display','none','important'));
@@ -32,7 +38,9 @@
  }
  function brain(){
   S.region=REGIONS.findIndex(r=>r.id===config.kind);S.sel=0;S.mode='run';S.floor=Math.min(LV().length-1,config.level);S.inFloor=0;S.rounds=0;S.correct=0;S.lives=3;S.score=0;S.streak=0;S.bestStreak=0;S.run={ptsMax:0};
-  S.busy=false;gameLook();setFloorUI();hudUI();show('game');nextRound(true);hide('.hud,#b-exit,#b-cnext,#b-next');
+  S.busy=false;gameLook();setFloorUI();hudUI();show('game');
+  if(config.kind==='synapse'){centsFor=()=>SF_STEPS[config.tier][Math.min(progress,SF_N-1)];replay=()=>{};hide('#b-again,#sr-rep');sfLabel()}
+  nextRound(true);hide('.hud,#b-exit,#b-cnext,#b-next');
  }
  function bigScore(){
   S.mode='practice';S.started=true;S.settings.mission=config.kind==='melody'?'melody':'rhythm';S.settings.level=['easy','hard','extreme'][config.tier];S.settings.measures=config.tier===0?2:4;S.settings.type='mixed';

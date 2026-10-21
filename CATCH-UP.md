@@ -15,3 +15,9 @@ Next: David tries the actual channels and pacing. 20 challenges/tier, three live
 
 ## Second Brain handoff
 Canonical vault note: [[Music Theory Super Genius Handoff]] at `~/Documents/Second_Brain/20 Builds/Music Theory Games/Games/Music Theory Super Genius Handoff.md`. Game note [[Super Test]], Now and AI Log are updated. Safe to continue in Claude. The dated handoff is historical.
+
+## 2026-10-21 evening: moving window, pilots, no scroll (commit 8f7a3eb)
+Window always moving; right answers (only) fly you further from Earth; sample pilots (SAMPLE_PILOTS in game.js) + YOUR BEST to pass, "Passed NAME!" label; page fits 1366x768 with no scrolling. Sample names must be replaced by the online board before publishing. Waiting on David's reaction.
+
+## 2026-10-21 evening: home page placement (hub 53d7579, super-test 177f170)
+Gold border around the six games, challenge plate at top center, red Leaderboard button -> ../super-test/#leaderboard. Hub publish must wait for the game publish.

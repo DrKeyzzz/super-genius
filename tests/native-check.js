@@ -13,7 +13,7 @@ addEventListener('super-check-start',()=>{
    submit();clearInterval(timer);
   }else if(engine==='brainwaves'){
    if(S.phase!=='answer')return;
-   if(kind==='chords')cAnswer(S.cur.q);else if(kind==='scales')pAnswerScale(S.cur.k);else if(kind==='intervals')iAnswer(S.cur.n);else if(kind==='synapse')answer(S.cur.dir);else {S.cur.picks=S.cur.chords.map(c=>c.rn);pSubmit()};clearInterval(timer);
+   if(kind==='chords')cAnswer(S.cur.q);else if(kind==='scales')pAnswerScale(S.cur.k);else if(kind==='intervals')iAnswer(S.cur.n);else if(kind==='synapse'){answer(S.cur.dir);return}else {S.cur.picks=S.cur.chords.map(c=>c.rn);pSubmit()};clearInterval(timer);
   }else if(engine==='earshot-saloon'){
    if(kind==='bluff'){if(S.phase!=='bluff')return;bluffCall(S.hand.bluff.cheat);clearInterval(timer)}else{if(S.phase!=='pick')return;choose(S.hand.cards.findIndex(c=>c.right));clearInterval(timer)}
   }else if(engine==='rhythm-trainer'){
