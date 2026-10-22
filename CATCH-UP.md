@@ -54,3 +54,6 @@ Tiers removed. One Launch; every challenge gets config(...,EXPERT=2) (the old to
 
 ## 2026-10-22: shorter dictation (his picks)
 Big Score channels: rhythm 2 bars (was 4) at extreme; melody already 2 bars master. 4 listens per dictation (bridge wraps playQuestion/melPlay; badge shows listens left, button disabled at 0). 3-minute clock (game.js startClock on the channel started message for game score): ring + time in the monitor bar, red under 30 s; running out = miss ("Time ran out"). Bridge ?v=3 in all channels and build_channels.py. Checked both in Flight lab.
+
+## 2026-10-22: PUBLISHED (his "publish")
+Folder renamed super-test -> super-genius; branch codex/super-genius -> main; new public repo DrKeyzzz/super-genius with GitHub Pages: https://drkeyzzz.github.io/super-genius/. Before publishing: sample pilot names removed (SAMPLE_PILOTS = [], his pick), home/My Report pills link to the live hub, footer says RECORDS SAVE ON THIS DEVICE. Hub de42356 (plate + Leaderboard -> ../super-genius/, Mozart background, gold band) pushed. Added to Publish.command. Still NOT done: student sign-in/My Report/practice time hookup, online leaderboard + Firestore rules, MTG_HIST, Feedback/Time snippets.
