@@ -36,3 +36,6 @@ fx.js (HullFX): each miss draws a spreading crack star in the window, throws gla
 
 ## 2026-10-21 night: NO SCROLLING in channels
 game.js fit(): the channel iframe is laid out on a bigger virtual screen and CSS-transform scaled to the monitor (wide mode; shape-keeping mode, centred, for tables that grow with width like Earshot). body.playing shortens the window to 16svh. Earshot fitGame disabled in channel-bridge.js. All 20 channels fit at 1366x768 (top tier) and 1280x640 (first tier); page never scrolls. 9/9 Earshot checks pass. Smallest scale about 0.5 (Earshot, key signatures).
+
+## 2026-10-21 night: fit fix for clipped controls
+His screenshot: Brainwaves progressions buttons cut off at the bottom (Brainwaves clips, it never scrolls). need() now also measures visible buttons/text bottoms (skips full-screen canvases); fit watches every 400 ms for the whole challenge. All 20 channels OK at 1700x960 (top tier) and 1280x640 (first tier).
