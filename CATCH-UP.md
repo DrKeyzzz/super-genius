@@ -78,3 +78,6 @@ board.js (GeniusBoard): genius_scores/<class or none>_<sid> best flight, sent fr
 
 ## 2026-10-22: bigger challenges (complaints that some games are small)
 While a challenge is on (body.playing): flight window is a slim strip clamp(56px,9svh,110px), footer hidden, tighter console. Monitor at 1600x900 went 595 -> 693 px tall (+17%). All 20 rechecked at 1600x900: nothing cut, no scroll; Earshot 0.63 -> 0.74, Brainwaves scales 0.62 -> 0.78, Scale Quest key signatures 0.65 -> 0.83, most others at 1 or more. Real students already on the live board (Maxwell H. showed in the sky). Committed, NOT published.
+
+## 2026-10-22: Earshot table resized for the wide monitor (his ask)
+Bridge earshot() CSS: single-column stage (empty poster column gone), .room = grid [dealer + bubble column | table], .roundtable = grid with the dealer card on the left and the 4 answer cards in one row beside it (labels, timer, actions in the right column). Earshot now at full scale: cards 187 px at 1600x900 (were 110), 150 px at 1280x640; nothing cut in Dealer interval, Crooked Clara, High Noon. Bridge ?v=8. Committed, NOT published.

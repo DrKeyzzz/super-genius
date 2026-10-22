@@ -23,6 +23,6 @@ for game in ['scale-quest','tidal-tones','earshot-saloon','brainwaves','rhythm-t
     # Relative resources remain local to the frozen component folder. Intro playback is suppressed in bootstrap.
     source=source.replace('<head>','<head>\n<meta http-equiv="Content-Security-Policy" content="default-src \'self\' data: blob:; script-src \'self\' \'unsafe-inline\'; connect-src \'none\'; style-src \'self\' \'unsafe-inline\' https://fonts.googleapis.com; font-src \'self\' https://fonts.gstatic.com; img-src \'self\' data: blob:; media-src \'none\'">\n<script src="../channel-bootstrap.js"></script>',1)
     source=re.sub(r'<body([^>]*)>',lambda m:f'<body{m[1]} data-super-engine="{game}">',source,count=1)
-    source=source.replace('</body>','<script src="../channel-bridge.js?v=6"></script></body>')
+    source=source.replace('</body>','<script src="../channel-bridge.js?v=8"></script></body>')
     (root/'channels'/f'{game}.html').write_text(source)
 (root/'channels'/'manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
