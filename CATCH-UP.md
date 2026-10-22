@@ -66,3 +66,6 @@ He still saw "3 levels" (the three rank boxes). #tiers is now a route line (clas
 
 ## 2026-10-22: expert really is expert (his screenshot: "tonic of C major")
 Scale Quest channels at expert only use keys with 3+ sharps/flats (HARD = stdSig && |sigCount| >= 3: majors, minors, modes); key-signature questions need 4+; Name the degree uses its own picker (hard key, degrees 2-7, never the tonic) instead of degQuestion (which started on C major). Tidal expert keys: A E B Eb Ab Db. Bridge ?v=4. Checked 5 channels in Flight lab. Committed, NOT published (waiting for his publish).
+
+## 2026-10-22: Earshot readable in the cockpit (his screenshot: "so hard to see")
+Earshot channels drew at ~40%: tall layout (wanted-poster wall, 180 px Clara, tray) and fit() never grew back after shrinking while loading. Bridge earshot(): hides .wall, dealer 96 px, tighter rows, dealer card (.card.hole) full 168 px. game.js fit(): growth allowed up to twice per channel whenever there is >6% room (was once, only when content < 78% of height). Bridge ?v=6. All 20 channels checked at 1600x900: nothing cut, no scroll (Earshot now ~0.6, was 0.4; Scale Quest up to 1.45). Committed, NOT published.

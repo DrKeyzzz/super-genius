@@ -41,6 +41,8 @@
  function earshot(){
   // the cockpit shrinks the whole channel to fit, so Earshot's own zoom-to-window would fight it: keep the table at its natural size
   fitGame=()=>{const g=document.getElementById('game');if(g)g.style.zoom=1};fitGame();
+  // in the cockpit the table must read at a glance: no wanted-poster wall, a smaller Clara/dealer, tighter rows (so it scales up, not down)
+  const es=document.createElement('style');es.textContent='.wall{display:none!important}#dealer{width:96px!important;height:96px!important}.barrow{margin-top:0!important}.bubble{margin-bottom:6px!important;font-size:18px!important}.room{padding-bottom:8px!important}.tray{padding:8px 14px!important}.card.hole{width:168px!important}.card.hole .nm{font-size:17px!important}.card.hole .tag{font-size:12.5px!important}';document.head.append(es);
   S.diff=['medium','hard','expert'][config.tier];S.clef=config.tier===2?'mixed':'treble';S.mode='trail';startRun();
   if(config.kind==='bluff')dealBluff();else if(config.kind==='noon'){S.handNo=7;S.noon=null;dealNoon()}else dealRegular();
   hide('#trail,.hud,#exit-btn,#menu-btn');
