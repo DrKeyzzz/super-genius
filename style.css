@@ -59,3 +59,8 @@ header nav a{white-space:nowrap}@media(max-width:1000px){header>strong{display:n
 #boardList .s{font-weight:800;color:var(--accent);text-align:right}#boardList .t{color:var(--muted);font-size:12px;text-align:right}
 @media(max-width:700px){#boardList li{grid-template-columns:2em 1fr auto;}#boardList .r,#boardList .t{display:none}}
 #boardTabs button{margin-top:0}.board article{padding:8px 0}
+
+/* bigger challenges (his complaint: some games are small): while a challenge is on, the window is a slim strip and the footer steps aside */
+body.playing #flightWindow{height:clamp(56px,9svh,110px);border-width:6px;border-radius:40px 40px 18px 18px;margin-bottom:6px}
+body.playing footer{display:none}
+body.playing .console{padding-bottom:6px;margin-bottom:6px}

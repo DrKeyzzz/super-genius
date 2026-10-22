@@ -75,3 +75,6 @@ catalog config count: tidal notes 10, tidal intervals 5 (one miss ends the chann
 
 ## 2026-10-22: online leaderboard (his "go for it", no This week)
 board.js (GeniusBoard): genius_scores/<class or none>_<sid> best flight, sent from finish() only when the local best improves and a student is signed in. Leaderboard screen: your best + tabs My class / World top 10 (rank name, right/20, lives, time; you highlighted). Sky pilots = class board (or world) minus you. Rules block genius_scores in shared/firestore.rules, copied to every repo (+ super-genius/firestore.rules). NOT live until he pastes the rules; locally the board shows "could not load" (permission-denied) as expected. Previewed with sample rows (removed). Committed, NOT published.
+
+## 2026-10-22: bigger challenges (complaints that some games are small)
+While a challenge is on (body.playing): flight window is a slim strip clamp(56px,9svh,110px), footer hidden, tighter console. Monitor at 1600x900 went 595 -> 693 px tall (+17%). All 20 rechecked at 1600x900: nothing cut, no scroll; Earshot 0.63 -> 0.74, Brainwaves scales 0.62 -> 0.78, Scale Quest key signatures 0.65 -> 0.83, most others at 1 or more. Real students already on the live board (Maxwell H. showed in the sky). Committed, NOT published.
