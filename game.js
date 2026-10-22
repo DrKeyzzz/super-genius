@@ -12,13 +12,17 @@
  let fitK=1,fitWide=true,fitTimer=null;
  // Two ways to shrink: "wide" lays the game out on a wider virtual screen (best for ordinary pages); if the game grows taller
  // as it gets wider (a table that keeps its shape), keep the real width and only add height, centred.
- function need(){const d=frame.contentDocument,se=d.scrollingElement||d.documentElement;return[Math.max(se.scrollHeight,d.body?d.body.scrollHeight:0),se.scrollWidth]}
+ function need(){const d=frame.contentDocument,w=frame.contentWindow,se=d.scrollingElement||d.documentElement;let h=Math.max(se.scrollHeight,d.body?d.body.scrollHeight:0),wd=se.scrollWidth;
+  // some games never scroll, they just clip what doesn't fit: also count where the visible controls and text end
+  const ih=w.innerHeight;for(const e of d.querySelectorAll('button,select,input,canvas,svg,[role=button],h1,h2,h3,p,label')){if(e.closest('[hidden]'))continue;const b=e.getBoundingClientRect();if(b.width<3||b.height<3||b.height>=ih*.9||b.bottom>ih*3||b.top<-ih)continue;   // skip full-screen backdrops
+   const cs=w.getComputedStyle(e);if(cs.visibility==='hidden'||+cs.opacity===0)continue;h=Math.max(h,b.bottom+6);wd=Math.max(wd,b.right)}
+  return[h,wd]}
  function apply(W,H){const vw=fitWide?W/fitK:W;frame.style.width=vw+'px';frame.style.height=(H/fitK)+'px';
   frame.style.transform=fitK<1?`translateX(${fitWide?0:(W-W*fitK)/2}px) scale(${fitK})`:''}
  function fit(){if(!frame||!frame.contentDocument)return;const host=$('channelHost'),W=host.clientWidth,H=host.clientHeight;if(!W||!H)return;
   for(let i=0;i<5;i++){const[h,w]=need(),vh=H/fitK,vw=fitWide?W/fitK:W;if(h<=vh+1&&w<=vw+1)return;
    const k=fitK*Math.min(vh/h,vw/w);if(fitWide&&k<.62){fitWide=false;fitK=1;apply(W,H);continue}fitK=Math.max(.4,k-.002);apply(W,H)}}
- function fitSoon(){clearInterval(fitTimer);fitK=1;fitWide=true;if(frame){frame.style.transform='';frame.style.width='';frame.style.height=''}let n=0;fitTimer=setInterval(()=>{fit();if(++n>120)clearInterval(fitTimer)},250)}
+ function fitSoon(){clearInterval(fitTimer);fitK=1;fitWide=true;if(frame){frame.style.transform='';frame.style.width='';frame.style.height=''}fitTimer=setInterval(fit,400)}   // keeps watching the whole challenge: a result panel or new row that appears late also gets fitted
  addEventListener('resize',()=>{if(frame&&!$('channelHost').hidden)fitSoon()});
  function removeFrame(){clearTimeout(bootTimer);clearInterval(fitTimer);if(frame){frame.remove();frame=null}clearTimeout(feedbackTimer)}
  function renderTiers(){ $('tiers').replaceChildren();tiers.forEach((t,i)=>{const b=document.createElement('button');b.className='tier'+(i>saved.unlocked?' locked':'');b.setAttribute('aria-pressed',String(i===selected));b.disabled=i>saved.unlocked;b.innerHTML=`<small>TIER 0${i+1} ${saved.earned[i]?'· EARNED':i>saved.unlocked?'· LOCKED':''}</small><b>${t.name}</b><small>${t.tag}</small>`;b.onclick=()=>{selected=i;renderTiers()};$('tiers').append(b)});$('launch').textContent=saved.flight?'Resume saved flight →':'Launch flight →';$('launchNote').textContent=saved.flight?`${tiers[saved.flight.tier].name} · ${saved.flight.index}/${catalog.length} attempted · ${saved.flight.lives} lives`:catalog.length+' challenges · 3 lives · no overall clock'}
