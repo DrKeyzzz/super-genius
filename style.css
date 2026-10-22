@@ -49,3 +49,13 @@
 /* header with the practice time box: pills stay on one line; the title gives way first on narrower screens */
 header nav a{white-space:nowrap}@media(max-width:1000px){header>strong{display:none}}
 @media(max-width:700px){header nav{display:flex;flex-wrap:wrap;gap:6px;min-width:0}header{flex-wrap:wrap}}
+
+/* online leaderboard: My class / World top 10 */
+#boardTabs{display:flex;gap:8px;margin:14px 0 6px}#boardTabs button[aria-pressed="true"]{background:#234138;border-color:var(--accent);color:var(--ink)}
+.board-note{color:var(--muted);font-size:13px;margin:4px 0 8px}
+#boardList{list-style:none;margin:0;padding:0;display:grid;gap:6px;max-width:760px;overflow:auto;max-height:28svh}
+#boardList li{display:grid;grid-template-columns:2.2em 1fr auto 4.5em 7.5em;gap:10px;align-items:center;padding:8px 12px;border:1px solid #2c4256;border-radius:10px;background:#101c29}
+#boardList li.me{border-color:#ffd789;background:#2a2614}#boardList .n{color:var(--muted);font-weight:700}#boardList .r{color:#c5b3ff;font-size:12px}
+#boardList .s{font-weight:800;color:var(--accent);text-align:right}#boardList .t{color:var(--muted);font-size:12px;text-align:right}
+@media(max-width:700px){#boardList li{grid-template-columns:2em 1fr auto;}#boardList .r,#boardList .t{display:none}}
+#boardTabs button{margin-top:0}.board article{padding:8px 0}

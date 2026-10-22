@@ -72,3 +72,6 @@ Earshot channels drew at ~40%: tall layout (wanted-poster wall, 180 px Clara, tr
 
 ## 2026-10-22: Tidal Tones 10 notes, 5 intervals (his ask)
 catalog config count: tidal notes 10, tidal intervals 5 (one miss ends the channel, as before); Play the boats stays 3. Both Tidal games are already in every flight (deck = one of each of the 20). Checked in Flight lab. Committed, NOT published.
+
+## 2026-10-22: online leaderboard (his "go for it", no This week)
+board.js (GeniusBoard): genius_scores/<class or none>_<sid> best flight, sent from finish() only when the local best improves and a student is signed in. Leaderboard screen: your best + tabs My class / World top 10 (rank name, right/20, lives, time; you highlighted). Sky pilots = class board (or world) minus you. Rules block genius_scores in shared/firestore.rules, copied to every repo (+ super-genius/firestore.rules). NOT live until he pastes the rules; locally the board shows "could not load" (permission-denied) as expected. Previewed with sample rows (removed). Committed, NOT published.

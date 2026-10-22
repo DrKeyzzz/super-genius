@@ -56,9 +56,10 @@
  // a rank passed mid-flight: a banner flashes in the window and the flight keeps going
  function rankUp(name){const b=$('rankUp');b.innerHTML=`<small>RANK EARNED</small><b>${name}</b>`;b.hidden=false;b.classList.remove('show');void b.offsetWidth;b.classList.add('show');clearTimeout(rankUp.t);rankUp.t=setTimeout(()=>{b.hidden=true},3400)}
  // Other pilots to pass, placed where their best flight ended (v: right answers / 20).
- // No other pilots until the online Music Theory Super Genius board exists (his pick: no made-up names on the live site).
- const SAMPLE_PILOTS=[];
- function rivals(){const list=SAMPLE_PILOTS.map(([name,c])=>({name,v:c/N}));if(saved.best)list.push({name:'YOUR BEST',v:saved.best.correct/N,me:true});return list}
+ // Other pilots to pass: the real best flights from the online board (your class, or the world top 10 without a class)
+ let pilots=[];
+ function loadPilots(){if(typeof GeniusBoard==='undefined')return;const me=sid;GeniusBoard.rows('class').then(r=>r||GeniusBoard.rows('world')).then(r=>{pilots=(r||[]).filter(x=>x.sid!==me&&x.correct>0).map(x=>({name:x.name.toUpperCase(),v:x.correct/N}));if(!run)SpaceFlight.rivals(rivals())}).catch(()=>{})}
+ function rivals(){const list=pilots.slice();if(saved.best)list.push({name:'YOUR BEST',v:saved.best.correct/N,me:true});return list}
  function saveFlight(){if(!run||run.lab)return;saved.flight={...run};persist()}
  function begin(lab=false){removeFrame();if(lab){run={index:0,lives:3,correct:0,order:[$('labChannel').value],lab:true,started:Date.now()}}else if(saved.flight){run={...saved.flight}}else{run={index:0,lives:3,correct:0,order:deck().map(c=>c.id),lab:false,started:Date.now(),log:[]}}if(run.lives===0||run.index>=run.order.length){finish();return}loadChannel()}
  function loadChannel(){removeFrame();settled=false;loaded=false;current=catalog.find(c=>c.id===run.order[run.index]);token=crypto.randomUUID();sync();saveFlight();show('switching');$('channelName').textContent=current.name.toUpperCase();$('switchTitle').textContent=current.name;$('switchDetail').textContent=current.label+' · Expert';
@@ -82,8 +83,8 @@
  }
  function finish(){removeFrame();if(run.lab){home();return}const won=run.lives>0&&run.index===run.order.length,time=Date.now()-run.started,best=saved.best;saved.flight=null;run.prevBest=best?best.correct:null;
   // one best flight: most right answers, then more lives left, then the faster time
-  if(!best||run.correct>best.correct||(run.correct===best.correct&&(run.lives>best.lives||(run.lives===best.lives&&time<best.ms))))saved.best={correct:run.correct,lives:run.lives,ms:time,at:new Date().toISOString(),won};
-  ranksFor(run).forEach((x,i)=>{if(x)saved.ranks[i]=true});persist();if(typeof MTG_HIST!=='undefined')MTG_HIST.run('genius',{score:run.correct,level:saved.ranks.filter(Boolean).length,acc:run.index?run.correct/run.index*100:0});show('finish');$('quit').hidden=true;$('finish').className='screen finish '+(won?'epic':'fail');$('medal').textContent=won?'✦':'✧';$('finishLabel').textContent=won?'TOP RANK EARNED':'FLIGHT ENDED';$('finishTitle').textContent=won?tiers[2].name:'You’ll fly again.';
+  const improved=!best||run.correct>best.correct||(run.correct===best.correct&&(run.lives>best.lives||(run.lives===best.lives&&time<best.ms)));if(improved)saved.best={correct:run.correct,lives:run.lives,ms:time,at:new Date().toISOString(),won};
+  ranksFor(run).forEach((x,i)=>{if(x)saved.ranks[i]=true});persist();if(improved&&prof&&typeof GeniusBoard!=='undefined')GeniusBoard.submit(saved.best,saved.ranks.filter(Boolean).length);if(typeof MTG_HIST!=='undefined')MTG_HIST.run('genius',{score:run.correct,level:saved.ranks.filter(Boolean).length,acc:run.index?run.correct/run.index*100:0});show('finish');$('quit').hidden=true;$('finish').className='screen finish '+(won?'epic':'fail');$('medal').textContent=won?'✦':'✧';$('finishLabel').textContent=won?'TOP RANK EARNED':'FLIGHT ENDED';$('finishTitle').textContent=won?tiers[2].name:'You’ll fly again.';
   $('finishText').textContent=won?`All ${N} expert challenges survived · ${run.correct} right · ${fmt(time)}. The highest rank in the fleet.`:`${run.correct} right across ${run.index} challenges. Review your games and launch another flight.`;$('liveStatus').textContent='RECORD SAVED ON THIS DEVICE';if(won)SpaceFlight.celebrate();else endOfLine();$('again').focus()
  }
  // END OF LINE: the black screen after the ship burns up, with how far this flight got
@@ -109,11 +110,23 @@
   if(strong.length){const b=el('div','eol-box good');b.append(el('h3','','Strong'),el('p','',strong.join(' · ')));fb.append(b)}
   if(misses.length){const b=el('div','eol-box work'),ul=el('ul');b.append(el('h3','','Practice these'));misses.forEach(c=>{const li=el('li'),a=el('a','',`Practice in ${c.name} →`);a.href=`../${c.engine}/`;li.append(el('b','',c.label),a);ul.append(li)});b.append(ul);fb.append(b)}
   $('eol').hidden=false;$('eolAgain').focus()}
- function home(){removeFrame();$('eol').hidden=true;HullFX.reset();run=null;show('lobby');$('quit').hidden=true;$('channelName').textContent='MISSION CONTROL';$('progress').textContent='ONE FLIGHT · EVERY SKILL';$('liveStatus').textContent='RECORDS SAVE ON THIS DEVICE';$('tierStatus').textContent='SYSTEMS READY';document.body.dataset.damage='0';$('hull').textContent='HULL 100% ● ● ●';$('rank').textContent='FLIGHT DECK 09';SpaceFlight.reset();SpaceFlight.rivals(rivals());renderLobby()}
+ function home(){removeFrame();$('eol').hidden=true;HullFX.reset();run=null;show('lobby');$('quit').hidden=true;$('channelName').textContent='MISSION CONTROL';$('progress').textContent='ONE FLIGHT · EVERY SKILL';$('liveStatus').textContent='RECORDS SAVE ON THIS DEVICE';$('tierStatus').textContent='SYSTEMS READY';document.body.dataset.damage='0';$('hull').textContent='HULL 100% ● ● ●';$('rank').textContent='FLIGHT DECK 09';SpaceFlight.reset();SpaceFlight.rivals(rivals());renderLobby();loadPilots()}
  $('launch').onclick=()=>begin();$('labLaunch').onclick=()=>begin(true);$('next').onclick=()=>{if(run.lab||run.lives===0||run.index>=run.order.length)finish();else loadChannel()};$('retryChannel').onclick=loadChannel;$('again').onclick=home;$('eolHome').onclick=home;$('eolAgain').onclick=()=>{home();begin()};
  $('quit').onclick=()=>{if(!run)return;removeFrame();if(!run.lab){saved.flight=null;persist()}home()};
- $('boardBtn').onclick=()=>{if(run)return;show('board');$('records').replaceChildren();const card=(k,x)=>{const a=document.createElement('article'),b=document.createElement('b'),s=document.createElement('span');b.textContent=k;s.textContent=x;a.append(b,s);$('records').append(a)};const bf=saved.best;
-  card('Your best flight',bf?`${bf.correct}/${N} right · ${bf.lives} ${bf.lives===1?'life':'lives'} left · ${fmt(bf.ms)} · ${new Date(bf.at).toLocaleDateString()}`:'No flight yet');tiers.forEach((t,i)=>card(t.name,saved.ranks[i]?'✦ Earned':t.goal))};$('boardBack').onclick=home;
+ // the leaderboard: My class and World top 10 (online), with your own ranks and best flight on this device above them
+ let boardKind='class';
+ function boardRows(){const list=$('boardList'),note=$('boardNote');list.replaceChildren();document.querySelectorAll('#boardTabs button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.k===boardKind)));
+  if(typeof GeniusBoard==='undefined'){note.textContent='The online board could not load.';return}
+  note.textContent='Loading…';GeniusBoard.rows(boardKind).then(rows=>{
+   if(rows===null){note.textContent=prof?'You are not in a class yet. Ask your teacher for a class code, or see the World top 10.':'Sign in on the home page to join your class board.';return}
+   note.textContent=rows.length?(boardKind==='world'?'The 10 best flights anywhere.':'Best flight of each pilot in your class.'):'No flights yet. Be the first!';
+   rows.forEach((r,i)=>{const li=document.createElement('li');if(r.sid===sid)li.className='me';const rk=r.rank>0?tiers[Math.min(2,r.rank-1)].name:'No rank yet';
+    li.innerHTML=`<span class="n">${i+1}</span><b></b><span class="r"></span><span class="s">${r.correct}/${N}</span><span class="t">${r.lives} ♥ · ${fmt(r.ms)}</span>`;li.querySelector('b').textContent=r.name;li.querySelector('.r').textContent=rk;list.append(li)})
+  }).catch(()=>{note.textContent='The online board could not load. Check your connection and try again.'})}
+ $('boardBtn').onclick=()=>{if(run)return;show('board');$('records').replaceChildren();const card=(k,x)=>{const a=document.createElement('article'),b=document.createElement('b'),s=document.createElement('span');b.textContent=k;s.textContent=x;a.append(b,s);$('records').append(a)};const bf=saved.best,rk=saved.ranks.lastIndexOf(true);
+  card(prof?'Your best flight':'Your best (this device)',bf?`${bf.correct}/${N} right · ${bf.lives} ${bf.lives===1?'life':'lives'} left · ${fmt(bf.ms)}${rk>=0?' · '+tiers[rk].name:''}`:'No flight yet');if(!prof)card('Guests are not on the board','Sign in on the home page to put your name up.');
+  if(!prof)boardKind='world';boardRows()};
+ document.querySelectorAll('#boardTabs button').forEach(b=>b.onclick=()=>{boardKind=b.dataset.k;boardRows()});$('boardBack').onclick=home;
 catalog.forEach(c=>$('labChannel').add(new Option(c.name+' · '+c.label,c.id)));
  addEventListener('message',receive);addEventListener('pagehide',saveFlight);home();if(location.hash==='#leaderboard')$('boardBtn').click();   // the home page's red Leaderboard button opens straight to the board
 })();
