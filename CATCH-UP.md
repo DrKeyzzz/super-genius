@@ -63,3 +63,6 @@ Saves per student: mtg_super_genius_v1:<sid> (shared sign-in rdt_profile_v1; gue
 
 ## 2026-10-22: launch screen shows ONE route, not three boxes
 He still saw "3 levels" (the three rank boxes). #tiers is now a route line (class route): Earth -> Theory Genius (Mars, 5) -> Super Theory Genius (Jupiter, 10) -> Super Music Theory Genius (Pluto, all 20), earned stops gold, YOUR BEST marker; phones show it as a vertical list. Also: an ended saved flight (0 lives) is dropped on load; header pills no-wrap, title hides under 1000px, pills wrap on phones (practice time box fit).
+
+## 2026-10-22: expert really is expert (his screenshot: "tonic of C major")
+Scale Quest channels at expert only use keys with 3+ sharps/flats (HARD = stdSig && |sigCount| >= 3: majors, minors, modes); key-signature questions need 4+; Name the degree uses its own picker (hard key, degrees 2-7, never the tonic) instead of degQuestion (which started on C major). Tidal expert keys: A E B Eb Ab Db. Bridge ?v=4. Checked 5 channels in Flight lab. Committed, NOT published (waiting for his publish).

@@ -17,17 +17,24 @@
  const sheet=document.createElement('style');sheet.textContent=`.mtgfb-foot,.mtgfb-ov{display:none!important}html,body{min-height:100%;margin:0}body{padding:0!important}a[href]{pointer-events:none}#super-gate{position:fixed;inset:0;z-index:2147483647;background:#07121feF;display:grid;place-content:center;text-align:center;padding:24px;color:#f0f6ff;font:16px system-ui}#super-gate h2{font-size:clamp(23px,4vw,42px);margin:8px 0}#super-gate p{max-width:600px;line-height:1.6;color:#bacbdc}#super-gate button{margin:18px auto;background:#b8eee2;color:#0b2729;font:700 16px system-ui;padding:14px 30px;border:0;border-radius:8px;cursor:pointer}#super-gate small{color:#b9a273}#super-gate button:focus-visible{outline:3px solid white;outline-offset:4px}`;document.head.append(sheet);
  const gate=document.createElement('div');gate.id='super-gate';document.body.append(gate);
  function scaleQuest(){
-  S.selected=new Set(config.tier===0?['G','F','D','Bb','A','Eb','C:nat','D:dor','F:lyd']:config.tier===1?PLAY_ORDER.filter(k=>Math.abs(sigCount(k))<=5):PLAY_ORDER);S.deg=false;S.ks=false;S.ksMix=false;S.muted=false;S.clef=config.clef||'treble';setClef(S.clef,false);
+  // expert: only keys with 3 or more sharps or flats (majors, minors and modes), never C major, A minor or the easy keys
+  const HARD=PLAY_ORDER.filter(k=>stdSig(k)&&Math.abs(sigCount(k))>=3);
+  S.selected=new Set(config.tier===0?['G','F','D','Bb','A','Eb','C:nat','D:dor','F:lyd']:config.tier===1?PLAY_ORDER.filter(k=>Math.abs(sigCount(k))<=5):HARD);S.deg=false;S.ks=false;S.ksMix=false;S.muted=false;S.clef=config.clef||'treble';setClef(S.clef,false);
   startRun('practice');const r=S.run;let key=pick([...S.selected]),type=config.kind;
   advance=()=>{};hide('#quitBtn,.hud,#keySelect,#moreBox');
-  if(type==='signature'){S.ks=true;r.ks=true;ksQuestion(pick(PLAY_ORDER.filter(stdSig)),config.variant||pick(['ksname','kscount','ksbuild']));return}
-  if(type==='degree-name'){r.deg=true;degQuestion();return}
+  if(type==='signature'){S.ks=true;r.ks=true;ksQuestion(pick(PLAY_ORDER.filter(k=>stdSig(k)&&Math.abs(sigCount(k))>=(config.tier===2?4:0))),config.variant||pick(['ksname','kscount','ksbuild']));return}
+  if(type==='degree-name'){r.deg=true;
+   // a hard key and never the tonic (Scale Quest's own picker starts on C major and can ask for degree 1)
+   const k=pick([...S.selected]),d=2+Math.floor(Math.random()*6),answer=SCALES[k][d-1],t=pick(DEG_KINDS);
+   r.q={key:k,type:t,degree:d,dn:true,dir:null,sk:k,name:scaleName(k),answer,tries:0,t0:Date.now()};
+   if(t==='dstaff'){const c=[];for(let i=1;i<CL().max;i++)if(letterAt(i)===answer[0])c.push(i);r.q.pos=pick(c)}if(t==='dpiano')r.q.m=pick(keysOfPc(pcOf(answer)));
+   renderQuestion();advance=()=>{};hide('#menuBtn,#homeBtn,#quitBtn,#timer,.hud,#qCount,#keySelect,#moreBox');return}
   const degree=2+Math.floor(Math.random()*6),sk=key;
   r.q={key,type,degree:type==='build'?null:degree,dir:typeOf(key)==='mel'?'up':null,sk,name:scaleName(key),answer:type==='build'?null:SCALES[sk][degree-1],tries:0,t0:Date.now()};renderQuestion();
   advance=()=>{};hide('#menuBtn,#homeBtn,#quitBtn,#timer,.hud,#qCount,#keySelect,#moreBox');
  }
  function tidal(){
-  settings.game=config.kind==='intervals'?'intervals':'notes';settings.mode='practice';settings.clef=config.clef||'treble';settings.answer=config.kind==='piano'?'exact':'names';settings.ivl=['medium','hard','hard'][config.tier];settings.keys=['G','D','A','E','B','F','Bb','Eb','Ab','Db'];applyLevel(settings.game==='intervals'?['medium','hard','hard'][config.tier]:['medium','hard','expert'][config.tier]);
+  settings.game=config.kind==='intervals'?'intervals':'notes';settings.mode='practice';settings.clef=config.clef||'treble';settings.answer=config.kind==='piano'?'exact':'names';settings.ivl=['medium','hard','hard'][config.tier];settings.keys=config.tier===2?['A','E','B','Eb','Ab','Db']:['G','D','A','E','B','F','Bb','Eb','Ab','Db'];   // expert: 3 or more sharps or flatsapplyLevel(settings.game==='intervals'?['medium','hard','hard'][config.tier]:['medium','hard','expert'][config.tier]);
   document.body.dataset.view='game';startGame();game.keyOn=config.tier===2;game.key=pickKey();game.level=[3,6,10][config.tier];resize();hide('#pause-btn,#quit-btn,.hud');
   const rec=record;record=function(n,ok){rec(n,ok);if(done){game.running=false}};
  }
