@@ -69,3 +69,6 @@ Scale Quest channels at expert only use keys with 3+ sharps/flats (HARD = stdSig
 
 ## 2026-10-22: Earshot readable in the cockpit (his screenshot: "so hard to see")
 Earshot channels drew at ~40%: tall layout (wanted-poster wall, 180 px Clara, tray) and fit() never grew back after shrinking while loading. Bridge earshot(): hides .wall, dealer 96 px, tighter rows, dealer card (.card.hole) full 168 px. game.js fit(): growth allowed up to twice per channel whenever there is >6% room (was once, only when content < 78% of height). Bridge ?v=6. All 20 channels checked at 1600x900: nothing cut, no scroll (Earshot now ~0.6, was 0.4; Scale Quest up to 1.45). Committed, NOT published.
+
+## 2026-10-22: Tidal Tones 10 notes, 5 intervals (his ask)
+catalog config count: tidal notes 10, tidal intervals 5 (one miss ends the channel, as before); Play the boats stays 3. Both Tidal games are already in every flight (deck = one of each of the 20). Checked in Flight lab. Committed, NOT published.

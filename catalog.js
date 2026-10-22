@@ -3,14 +3,14 @@
  const names={scale:'Scale Quest',tidal:'Tidal Tones',ear:'Earshot Saloon',brain:'Brainwaves',score:'The Big Score',roof:'Rooftop Runner'};
  const rows=[
  ['scale','piano','Scale degrees','Find the requested degree on the piano. Major, minor and modes are all in play.'],
- ['tidal','notes','Read the boats','Read three boats on the staff. Watch the clef, accidentals and key signature.'],
+ ['tidal','notes','Read the boats','Read ten boats in a row on the staff. Watch the clef, accidentals and key signature. One wrong boat ends the channel.'],
  ['brain','scales','Scales and modes','Listen to the scale up and down, then name it. Hear it again if you need to.'],
  ['ear','interval','The dealer’s interval','Listen to the interval, then choose the matching written note from the cards.'],
  ['score','rhythm','Rhythmic dictation','Listen to the full transmission. Two bars. Build its rhythm with the rhythm bank, then check. 4 listens, 3 minutes.'],
  ['roof','rhythm','Rooftop rhythm','Two bars. Tap and HOLD every written note; release for rests. Use Space or the tap pad. A four-beat count-in comes first.'],
  ['scale','build','Build a scale','Build the complete scale on the piano, starting on its root. Submit when every note is in place.'],
  ['brain','chords','Chord Colors','Hear the chord. Identify its quality, even when it is inverted or spread across octaves.'],
- ['tidal','intervals','Written intervals','Identify three written intervals on the moving boats. The staff and key signature determine their spelling.'],
+ ['tidal','intervals','Written intervals','Identify five written intervals in a row on the moving boats. The staff and key signature determine their spelling.'],
  ['scale','staff','Write the degree','Place the requested note on the staff with the correct accidental. Use the original note controls.'],
  ['score','melody','Melodic dictation','Hear the melody. Two bars. Enter its pitches AND rhythms with the piano and note lengths, then check. 4 listens, 3 minutes.'],
  ['brain','progressions','Chord progressions','The first chord is home. Listen, then place the Roman numerals for all three remaining chords and submit.'],
@@ -28,6 +28,7 @@
  const tiers=[{name:'Theory Genius',at:5,where:'Mars',goal:'Get past Mars · 5 right',color:'#9ae6d4'},{name:'Super Theory Genius',at:10,where:'Jupiter',goal:'Get past Jupiter · 10 right',color:'#c5b3ff'},{name:'Super Music Theory Genius',at:20,where:'Pluto',goal:'Survive all 20 challenges',color:'#ffd789'}];
  function shuffled(a,rng=Math.random){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(rng()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
  function deck(rng=Math.random){const buckets={};for(const c of shuffled(catalog,rng))(buckets[c.game]??=[]).push(c);const out=[];while(out.length<catalog.length){const choices=Object.values(buckets).filter(a=>a.length&&a[0].game!==out.at(-1)?.game);const pool=choices.length?choices:Object.values(buckets).filter(a=>a.length);pool.sort((a,b)=>b.length-a.length);out.push(pool[0].shift())}return out}
- function config(c,tier,token){return {...c,tier,token,count:3,level:({synapse:[2,4,5],intervals:[3,4,5],chords:[4,6,7],scales:[5,6,7],progressions:[2,4,5]}[c.kind]||[0,0,0])[tier],title:c.name+' · '+c.label,clef:c.game==='scale'&&tier===2?'grand':c.game==='tidal'&&tier===2?'grand':'treble'}}
+ function config(c,tier,token){return {...c,tier,token,count:c.game==='tidal'&&c.kind!=='piano'?(c.kind==='intervals'?5:10):3,   // Tidal Tones: 10 notes, 5 intervals
+  level:({synapse:[2,4,5],intervals:[3,4,5],chords:[4,6,7],scales:[5,6,7],progressions:[2,4,5]}[c.kind]||[0,0,0])[tier],title:c.name+' · '+c.label,clef:c.game==='scale'&&tier===2?'grand':c.game==='tidal'&&tier===2?'grand':'treble'}}
  const api={catalog,tiers,deck,config};if(typeof module!=='undefined')module.exports=api;else root.GeniusCatalog=api;
 })(typeof window!=='undefined'?window:globalThis);
