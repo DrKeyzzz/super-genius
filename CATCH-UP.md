@@ -42,3 +42,6 @@ His screenshot: Brainwaves progressions buttons cut off at the bottom (Brainwave
 
 ## 2026-10-22: spacing in the monitor
 His screenshot: Scale Quest staff card small at the top with empty space. fit() now grows small content once (up to 1.45x, content box < 78% of height and 85% of width) and centres the visible content; if growing causes overflow (Big Score resizes itself) it returns to 1x. All 20 channels OK (nothing cut, no scroll) at 1700x1100 (top tier) and 1280x640 (first tier).
+
+## 2026-10-22: burn-up shake settles
+His report: after the third miss the screen kept shaking on END OF LINE, so it could not be read. body.burning now shakes 2 s (burnshake x22) then eases still over 1 s (burnsettle); still by 3 s, before the blackout and END OF LINE. style.css?v=5. Checked in the browser (transform none from 3.2 s on).
