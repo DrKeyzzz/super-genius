@@ -33,3 +33,19 @@
 
 /* who is playing (shared sign-in) */
 .who{margin:10px 0 0;color:var(--muted);font-size:13px}.who a{color:var(--accent)}
+
+/* the launch screen's route: one flight from Earth to Pluto with the three ranks as stops (replaces the old tier boxes) */
+.route{position:relative;height:96px;margin:30px 70px 6px 18px;max-width:1000px}
+.rt-line{position:absolute;left:0;right:0;top:12px;height:6px;border-radius:3px;background:#24364a}.rt-line i{display:block;height:100%;border-radius:3px;background:linear-gradient(90deg,#9ae6d4,#ffd789)}
+.rt-stop{position:absolute;top:0;transform:translateX(-50%);text-align:center;width:150px;padding-top:30px}
+.rt-stop::before{content:"";position:absolute;top:6px;left:50%;width:18px;height:18px;margin-left:-9px;border-radius:50%;background:#152332;border:3px solid #3b5266}
+.rt-stop b{display:block;font-size:14px;line-height:1.2}.rt-stop small{display:block;color:var(--muted);font-size:11px;margin-top:3px}
+.rt-earth{width:auto;transform:none;text-align:left}.rt-earth::before{left:0;margin-left:0;background:#3f8fe0;border-color:#9fd0ff}
+.rt-top{transform:translateX(-100%);text-align:right;width:180px}.rt-top::before{left:auto;right:0;margin-left:0}
+.rt-rank.earned::before{background:#ffd789;border-color:#ffd789;box-shadow:0 0 10px #ffd78999}.rt-rank.earned b{color:#ffd789}
+.rt-best{top:-22px;padding-top:0;width:auto}.rt-best::before{display:none}.rt-best small{color:#fff;font-weight:700;letter-spacing:.1em;font-size:9px}
+@media(max-width:700px){.route{height:auto;margin:22px 0 4px;display:grid;gap:10px}.rt-line,.rt-best{display:none}.rt-stop,.rt-earth,.rt-top{position:relative;left:auto!important;transform:none;width:auto;text-align:left;padding:0 0 0 30px}.rt-stop::before,.rt-top::before{top:0;left:0;right:auto;margin-left:0}}
+
+/* header with the practice time box: pills stay on one line; the title gives way first on narrower screens */
+header nav a{white-space:nowrap}@media(max-width:1000px){header>strong{display:none}}
+@media(max-width:700px){header nav{display:flex;flex-wrap:wrap;gap:6px;min-width:0}header{flex-wrap:wrap}}

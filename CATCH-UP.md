@@ -60,3 +60,6 @@ Folder renamed super-test -> super-genius; branch codex/super-genius -> main; ne
 
 ## 2026-10-22: sign-in, My Report, practice time
 Saves per student: mtg_super_genius_v1:<sid> (shared sign-in rdt_profile_v1; guests and nobody signed in use the old device key). Lobby #who says who is flying or links guests to sign in. Identical MTG_HIST snippet inline in index.html: note(genius, [Game · challenge], ok) for every answer (lab too), run(genius, {score: right, level: ranks earned, acc}) when a flight ends; practice time counts. MTG_TIME box installed (apply-time.py: super-genius mounts in header nav). My Report All games: geniusBox (rank, best flight, next rank). Tested locally with a test student (cleaned up).
+
+## 2026-10-22: launch screen shows ONE route, not three boxes
+He still saw "3 levels" (the three rank boxes). #tiers is now a route line (class route): Earth -> Theory Genius (Mars, 5) -> Super Theory Genius (Jupiter, 10) -> Super Music Theory Genius (Pluto, all 20), earned stops gold, YOUR BEST marker; phones show it as a vertical list. Also: an ended saved flight (0 lives) is dropped on load; header pills no-wrap, title hides under 1000px, pills wrap on phones (practice time box fit).
