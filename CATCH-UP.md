@@ -57,3 +57,6 @@ Big Score channels: rhythm 2 bars (was 4) at extreme; melody already 2 bars mast
 
 ## 2026-10-22: PUBLISHED (his "publish")
 Folder renamed super-test -> super-genius; branch codex/super-genius -> main; new public repo DrKeyzzz/super-genius with GitHub Pages: https://drkeyzzz.github.io/super-genius/. Before publishing: sample pilot names removed (SAMPLE_PILOTS = [], his pick), home/My Report pills link to the live hub, footer says RECORDS SAVE ON THIS DEVICE. Hub de42356 (plate + Leaderboard -> ../super-genius/, Mozart background, gold band) pushed. Added to Publish.command. Still NOT done: student sign-in/My Report/practice time hookup, online leaderboard + Firestore rules, MTG_HIST, Feedback/Time snippets.
+
+## 2026-10-22: sign-in, My Report, practice time
+Saves per student: mtg_super_genius_v1:<sid> (shared sign-in rdt_profile_v1; guests and nobody signed in use the old device key). Lobby #who says who is flying or links guests to sign in. Identical MTG_HIST snippet inline in index.html: note(genius, [Game · challenge], ok) for every answer (lab too), run(genius, {score: right, level: ranks earned, acc}) when a flight ends; practice time counts. MTG_TIME box installed (apply-time.py: super-genius mounts in header nav). My Report All games: geniusBox (rank, best flight, next rank). Tested locally with a test student (cleaned up).

@@ -30,3 +30,6 @@
 #dictClock{display:inline-flex;align-items:center;gap:7px;font:700 13px ui-monospace,Menlo,monospace;color:var(--accent)}
 #dictClock i{width:16px;height:16px;border-radius:50%;background:conic-gradient(currentColor calc(var(--p,1)*360deg),#ffffff22 0)}
 #dictClock.low{color:#ff7a5a;animation:alarm 1s infinite}
+
+/* who is playing (shared sign-in) */
+.who{margin:10px 0 0;color:var(--muted);font-size:13px}.who a{color:var(--accent)}

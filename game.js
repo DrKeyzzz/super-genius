@@ -1,7 +1,10 @@
 'use strict';
 (()=>{
  const {catalog,tiers,deck,config}=GeniusCatalog,$=id=>document.getElementById(id),N=catalog.length,EXPERT=2;   // every challenge runs at the expert settings
- const key='mtg_super_genius_v1';let saved;try{saved=JSON.parse(localStorage.getItem(key)||'null')}catch{}saved=saved&&saved.version===2?saved:{version:2,ranks:[],best:null,flight:null};
+ // who is playing: the home page's shared sign-in (rdt_profile_v1); guests (music_guest) and nobody signed in keep a device copy
+ const prof=(()=>{try{if(sessionStorage.getItem('music_guest')==='1')return null;const p=JSON.parse(localStorage.getItem('rdt_profile_v1')||'null');return p&&p.first&&p.init?p:null}catch{return null}})(),sid=prof?(prof.first+prof.init).toLowerCase().replace(/[^a-z]/g,''):'';
+ const key='mtg_super_genius_v1'+(sid?':'+sid:'');   // one save per student, read by My Report
+ let saved;try{saved=JSON.parse(localStorage.getItem(key)||'null')}catch{}saved=saved&&saved.version===2?saved:{version:2,ranks:[],best:null,flight:null};
  let run=null,frame=null,current=null,token='',settled=false,bootTimer=null,loaded=false,feedbackTimer=null;
  function persist(){try{localStorage.setItem(key,JSON.stringify(saved))}catch{$('liveStatus').textContent='Storage unavailable · keep this tab open'}}
  function show(id){['lobby','channelHost','switching','feedback','finish','board'].forEach(x=>$(x).hidden=x!==id);document.body.classList.toggle('playing',id==='channelHost'||id==='switching');if(id==='channelHost')fitSoon()}
@@ -41,7 +44,8 @@
  function startClock(){stopClock();const end=Date.now()+CLOCK_MS,c=$('dictClock');c.hidden=false;
   const tick=()=>{const left=Math.max(0,end-Date.now());c.style.setProperty('--p',(left/CLOCK_MS).toFixed(4));c.classList.toggle('low',left<30000);$('dictTime').textContent=fmt(left);
    if(!left){stopClock();if(!settled&&run)result(false,'Time ran out: 3 minutes per dictation.')}};tick();clockTimer=setInterval(tick,250)}
- function renderLobby(){$('tiers').replaceChildren();tiers.forEach((t,i)=>{const d=document.createElement('div');d.className='tier'+(saved.ranks[i]?' earned':'');d.innerHTML=`<small>${saved.ranks[i]?'✦ EARNED':'RANK 0'+(i+1)}</small><b>${t.name}</b><small>${t.goal}</small>`;$('tiers').append(d)});
+ function renderLobby(){const w=$('who');if(prof)w.textContent=`Flying as ${prof.first.charAt(0).toUpperCase()+prof.first.slice(1)} ${prof.init}. Your ranks and best flight show on My Report.`;else{w.textContent='Playing as a guest: ranks stay on this device only. ';const a=document.createElement('a');a.href='https://drkeyzzz.github.io/';a.textContent='Sign in on the home page →';w.append(a)}
+  $('tiers').replaceChildren();tiers.forEach((t,i)=>{const d=document.createElement('div');d.className='tier'+(saved.ranks[i]?' earned':'');d.innerHTML=`<small>${saved.ranks[i]?'✦ EARNED':'RANK 0'+(i+1)}</small><b>${t.name}</b><small>${t.goal}</small>`;$('tiers').append(d)});
   $('launch').textContent=saved.flight?'Resume saved flight →':'Launch flight →';$('launchNote').textContent=saved.flight?`${saved.flight.index}/${N} attempted · ${saved.flight.lives} lives`:(saved.best?`Your best: ${saved.best.correct} right · `:'')+N+' expert challenges · 3 lives'}
  function sync(){if(!run)return;document.body.dataset.damage=3-run.lives;HullFX.setDamage(3-run.lives);const rk=run.lab?-1:ranksFor(run).lastIndexOf(true),nx=tiers.find((t,i)=>!ranksFor(run)[i]);$('rank').textContent=run.lab?'FLIGHT LAB':rk>=0?tiers[rk].name.toUpperCase():'EXPERT FLIGHT';$('tierStatus').textContent=run.lab?'EXPERT · PRACTICE':nx?`EXPERT · NEXT RANK AT ${nx.where.toUpperCase()}`:'EXPERT · TOP RANK';$('hull').textContent=`HULL ${Math.round(run.lives/3*100)}% ${'● '.repeat(run.lives)}${'○ '.repeat(3-run.lives)}`;$('progress').textContent=run.lab?'FLIGHT LAB · NO RANKING':`${Math.min(run.index+1,run.order.length)} / ${run.order.length} · ${run.correct} CORRECT`;$('quit').hidden=false;SpaceFlight.travel(run.lab?catalog.findIndex(c=>c.id===run.order[0])/N:run.correct/N)}
  // a rank passed mid-flight: a banner flashes in the window and the flight keeps going
@@ -65,7 +69,7 @@
   if(d.type==='error')channelError('The channel could not start: '+d.message);
   if(d.type==='result'&&loaded&&!settled)result(d.ok,d.detail);
  }
- function result(ok,detail){settled=true;clearTimeout(bootTimer);stopClock();if(!run.lab)(run.log||(run.log=[])).push({id:run.order[run.index],ok});const had=ranksFor(run);if(ok){run.correct++;SpaceFlight.boost()}else{run.lives--;document.body.classList.add('hit');setTimeout(()=>document.body.classList.remove('hit'),500);SpaceFlight.impact(run.lives===0);HullFX.hit(run.lives===0)}run.index++;const got=run.lab?-1:ranksFor(run).findIndex((x,i)=>i<2&&x&&!had[i]);if(got>=0){saved.ranks[got]=true;rankUp(tiers[got].name)}sync();saveFlight();
+ function result(ok,detail){settled=true;clearTimeout(bootTimer);stopClock();if(!run.lab)(run.log||(run.log=[])).push({id:run.order[run.index],ok});if(typeof MTG_HIST!=='undefined'&&current)MTG_HIST.note('genius',[current.name+' · '+current.label],ok);const had=ranksFor(run);if(ok){run.correct++;SpaceFlight.boost()}else{run.lives--;document.body.classList.add('hit');setTimeout(()=>document.body.classList.remove('hit'),500);SpaceFlight.impact(run.lives===0);HullFX.hit(run.lives===0)}run.index++;const got=run.lab?-1:ranksFor(run).findIndex((x,i)=>i<2&&x&&!had[i]);if(got>=0){saved.ranks[got]=true;rankUp(tiers[got].name)}sync();saveFlight();
   // the third mistake: the ship burns up in the atmosphere, then END OF LINE (no feedback screen in between)
   if(!ok&&!run.lives&&!run.lab){$('liveStatus').textContent='HULL FAILURE';HullFX.burn(finish);return}
   
@@ -74,7 +78,7 @@
  function finish(){removeFrame();if(run.lab){home();return}const won=run.lives>0&&run.index===run.order.length,time=Date.now()-run.started,best=saved.best;saved.flight=null;run.prevBest=best?best.correct:null;
   // one best flight: most right answers, then more lives left, then the faster time
   if(!best||run.correct>best.correct||(run.correct===best.correct&&(run.lives>best.lives||(run.lives===best.lives&&time<best.ms))))saved.best={correct:run.correct,lives:run.lives,ms:time,at:new Date().toISOString(),won};
-  ranksFor(run).forEach((x,i)=>{if(x)saved.ranks[i]=true});persist();show('finish');$('quit').hidden=true;$('finish').className='screen finish '+(won?'epic':'fail');$('medal').textContent=won?'✦':'✧';$('finishLabel').textContent=won?'TOP RANK EARNED':'FLIGHT ENDED';$('finishTitle').textContent=won?tiers[2].name:'You’ll fly again.';
+  ranksFor(run).forEach((x,i)=>{if(x)saved.ranks[i]=true});persist();if(typeof MTG_HIST!=='undefined')MTG_HIST.run('genius',{score:run.correct,level:saved.ranks.filter(Boolean).length,acc:run.index?run.correct/run.index*100:0});show('finish');$('quit').hidden=true;$('finish').className='screen finish '+(won?'epic':'fail');$('medal').textContent=won?'✦':'✧';$('finishLabel').textContent=won?'TOP RANK EARNED':'FLIGHT ENDED';$('finishTitle').textContent=won?tiers[2].name:'You’ll fly again.';
   $('finishText').textContent=won?`All ${N} expert challenges survived · ${run.correct} right · ${fmt(time)}. The highest rank in the fleet.`:`${run.correct} right across ${run.index} challenges. Review your games and launch another flight.`;$('liveStatus').textContent='RECORD SAVED ON THIS DEVICE';if(won)SpaceFlight.celebrate();else endOfLine();$('again').focus()
  }
  // END OF LINE: the black screen after the ship burns up, with how far this flight got
