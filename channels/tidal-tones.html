@@ -1869,10 +1869,10 @@ const ANSWER_TITLE = { names: 'Note names', any: 'Piano', exact: 'Piano exact', 
 const CLEF_SHORT = { treble: 'Treble', bass: 'Bass', alto: 'Alto', grand: 'Grand staff' };
 const toRow = d => { const r = d.data(); return { ...r, id: d.id, at: r.created_at && r.created_at.toDate ? r.created_at.toDate().toISOString() : new Date().toISOString() }; };
 // ---------- developer scores ----------
-// The developer plays as "Milnes D.". When he posts while signed in with his Google account, the score is marked
+// The developer plays as "Maestro". When he posts while signed in with his Google account, the score is marked
 // dev: true and shows on every class's board with a DEV badge. The rules stop anyone else using that name.
-const DEV_NAME = 'Milnes D.', DEV_EMAILS = ['milnesda@eht.k12.nj.us'];
-const isDevName = n => /^\s*milnes\s*d\.?\s*$/i.test(String(n || ''));
+const DEV_NAME = 'Maestro', DEV_EMAILS = [];
+const isDevName = n => /^\s*maestro\b/i.test(String(n || ''));
 // true = post as the developer; asks him to sign in once if needed. Throws for anyone else using the name.
 async function devPost(name, getAuth, signIn) {
   if (!isDevName(name)) return false;
@@ -1880,7 +1880,7 @@ async function devPost(name, getAuth, signIn) {
   if (auth.authStateReady) await auth.authStateReady();
   let email = auth.currentUser && auth.currentUser.email;
   if (!email || !DEV_EMAILS.includes(String(email).toLowerCase())) email = await signIn();
-  if (!DEV_EMAILS.includes(String(email).toLowerCase())) throw new Error('Only the developer can post as Milnes D.');
+  if (!DEV_EMAILS.includes(String(email).toLowerCase())) throw new Error('Only the developer can post as Maestro');
   return true;
 }
 // Every developer score in a collection (merged into class boards).
@@ -3048,7 +3048,7 @@ $('res-home').addEventListener('click', toHarbor);
 $('res-board').addEventListener('click', () => openBoard(lastRun));
 $('board-btn').addEventListener('click', () => { if (view() !== 'game') openBoard(null); });
 /* ---------- teacher dashboard (same teachers, classes and approvals as the other games) ---------- */
-const TEACHER_EMAILS = ['milnesda@eht.k12.nj.us'], ADMIN_EMAILS = ['milnesda@eht.k12.nj.us'];   // must match firestore.rules
+const TEACHER_EMAILS = [], ADMIN_EMAILS = [];   // must match firestore.rules
 let fbAuthP = null;
 function fbAuth() {
   const SDK = 'https://www.gstatic.com/firebasejs/10.12.2/';

@@ -2518,9 +2518,9 @@ function showWelcome(keep) {
   $('welcome').hidden = false;
   setTimeout(() => $('w-first').focus(), 50);
 }
-// The developer plays as "Milnes D."; posting under that name needs his Google sign-in (the rules check it)
-const DEV_NAME = 'Milnes D.', DEV_EMAILS = ['milnesda@eht.k12.nj.us'];
-const isDevName = n => /^\s*milnes\s*d\.?\s*$/i.test(String(n || ''));
+// The developer plays as "Maestro"; posting under that name needs his Google sign-in (the rules check it)
+const DEV_NAME = 'Maestro', DEV_EMAILS = [];
+const isDevName = n => /^\s*maestro\b/i.test(String(n || ''));
 async function devSignIn() { const { auth, authMod } = await fbAuth(); return (await authMod.signInWithPopup(auth, new authMod.GoogleAuthProvider())).user.email; }
 // 'no' (not the developer's name), 'yes' (signed in with the developer's Google account) or 'signin' (needs a click to sign in)
 async function devReady(name) {
@@ -2536,7 +2536,7 @@ async function devPost(name) {
   if (auth.authStateReady) await auth.authStateReady();
   let email = auth.currentUser && auth.currentUser.email;
   if (!email || !DEV_EMAILS.includes(String(email).toLowerCase())) email = await devSignIn();
-  if (!DEV_EMAILS.includes(String(email).toLowerCase())) throw new Error('Only the developer can post as Milnes D.');
+  if (!DEV_EMAILS.includes(String(email).toLowerCase())) throw new Error('Only the developer can post as Maestro');
   return true;
 }
 $('w-form').addEventListener('submit', async e => {
@@ -2641,7 +2641,7 @@ function pushPosters() {
   posterPushT = setTimeout(async () => {
     const p = getProfile(); if (!p || sidOf(p).length < 2) return;
     try {
-      // Milnes D. writes with his Google sign-in (the rules reserve that name)
+      // Maestro writes with the admin's Google sign-in (the rules reserve that name)
       if (isDevName(displayName(p))) { const { auth } = await fbAuth(); if (auth.authStateReady) await auth.authStateReady(); }
       const { fs, db } = await fb(), ref = fs.doc(db, POSTERS_COL, posterDocId(p));
       const d = await wait(fs.getDoc(ref));
@@ -2846,7 +2846,7 @@ async function saveRun() {
     if (dv === 'signin') {
       // browsers block a Google pop-up that isn't opened by a click, so ask for one
       if (el()) {
-        el().className = 'save'; el().innerHTML = 'To post as Milnes D., sign in with your Google account. <button type="button" id="dev-signin">Sign in with Google</button>';
+        el().className = 'save'; el().innerHTML = 'To post as Maestro, sign in with your Google account. <button type="button" id="dev-signin">Sign in with Google</button>';
         $('dev-signin').onclick = async () => { try { await devSignIn(); saveRun(); } catch (e) { el().className = 'save err'; el().textContent = `Google sign-in didn't finish (${e && e.code || 'cancelled'}).`; } };
       }
       saving = false; return;
@@ -2862,7 +2862,7 @@ async function saveRun() {
       try { ref = await wait(fs.addDoc(fs.collection(db, SCORES), data)); }
       catch (e2) {
         if (el()) {
-          el().className = 'save err'; el().innerHTML = 'Your Google sign-in on this computer needs a refresh to post as Milnes D. <button type="button" id="dev-signin">Sign in with Google again</button>';
+          el().className = 'save err'; el().innerHTML = 'Your Google sign-in on this computer needs a refresh to post as Maestro <button type="button" id="dev-signin">Sign in with Google again</button>';
           $('dev-signin').onclick = async () => { try { await devSignIn(); saveRun(); } catch (x) { el().className = 'save err'; el().textContent = `Google sign-in didn't finish (${x && x.code || 'cancelled'}).`; } };
         }
         saving = false; return;

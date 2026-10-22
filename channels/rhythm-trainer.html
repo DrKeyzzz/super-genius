@@ -1368,8 +1368,8 @@ const CONFIG = {
   dailyGoal: 20,             // rhythms per day for full effort credit on the session report
   levelBonus: { beginner: 0.9, beginner16: 0.95, easy: 1.0, hard: 1.1, extreme: 1.2 },  // report accuracy multiplier per level
   localTeacherPin: '2468',   // test mode only; with Firebase the teacher signs in with Google
-  teacherEmails: ['milnesda@eht.k12.nj.us'], // built-in teachers (must match teacherEmails() in firestore.rules); others request access and the admin approves them
-  adminEmails: ['milnesda@eht.k12.nj.us'],  // can manage the World board (must match firestore.rules)
+  teacherEmails: [], // built-in teachers (must match teacherEmails() in firestore.rules); others request access and the admin approves them
+  adminEmails: [],  // can manage the World board (must match firestore.rules)
 };
 
 // Class leaderboard: paste the firebaseConfig values from your Firebase project here
@@ -2947,10 +2947,10 @@ function withTimeout(promise, ms = 12000) {
   return Promise.race([promise, new Promise((_, rej) => setTimeout(() => rej(new Error('The leaderboard took too long to answer.')), ms))]);
 }
 // ---------- developer scores ----------
-// The developer plays as "Milnes D.". When he posts while signed in with his Google account, the score is marked
+// The developer plays as "Maestro". When he posts while signed in with his Google account, the score is marked
 // dev: true and shows on every class's board with a DEV badge. The rules stop anyone else using that name.
-const DEV_NAME = 'Milnes D.', DEV_EMAILS = ['milnesda@eht.k12.nj.us'];
-const isDevName = n => /^\s*milnes\s*d\.?\s*$/i.test(String(n || ''));
+const DEV_NAME = 'Maestro', DEV_EMAILS = [];
+const isDevName = n => /^\s*maestro\b/i.test(String(n || ''));
 // true = post as the developer; asks him to sign in once if needed. Throws for anyone else using the name.
 async function devPost(name, getAuth, signIn) {
   if (!isDevName(name)) return false;
@@ -2958,7 +2958,7 @@ async function devPost(name, getAuth, signIn) {
   if (auth.authStateReady) await auth.authStateReady();
   let email = auth.currentUser && auth.currentUser.email;
   if (!email || !DEV_EMAILS.includes(String(email).toLowerCase())) email = await signIn();
-  if (!DEV_EMAILS.includes(String(email).toLowerCase())) throw new Error('Only the developer can post as Milnes D.');
+  if (!DEV_EMAILS.includes(String(email).toLowerCase())) throw new Error('Only the developer can post as Maestro');
   return true;
 }
 // Every developer score in a collection (merged into class boards).
