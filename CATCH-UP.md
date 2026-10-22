@@ -33,3 +33,6 @@ SF_STEPS in channel-bridge.js (tier 1: 50-12 cents, tier 2: 30-7, tier 3: 18-3).
 
 ## 2026-10-21 night: hull damage + burn-up + END OF LINE
 fx.js (HullFX): each miss draws a spreading crack star in the window, throws glass/metal/sparks (fx canvas), heats the cockpit (--heat, #heat overlay, red frame, alarm text, embers at 2 misses). Third miss (not lab): HullFX.burn -> flames, white-hot, blackout, then #eol "END OF LINE" with rank, cleared, farthest point, flight time, best; Launch again / Mission control. Static .crack svg removed. Tests pass.
+
+## 2026-10-21 night: NO SCROLLING in channels
+game.js fit(): the channel iframe is laid out on a bigger virtual screen and CSS-transform scaled to the monitor (wide mode; shape-keeping mode, centred, for tables that grow with width like Earshot). body.playing shortens the window to 16svh. Earshot fitGame disabled in channel-bridge.js. All 20 channels fit at 1366x768 (top tier) and 1280x640 (first tier); page never scrolls. 9/9 Earshot checks pass. Smallest scale about 0.5 (Earshot, key signatures).
