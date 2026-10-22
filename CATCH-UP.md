@@ -45,3 +45,6 @@ His screenshot: Scale Quest staff card small at the top with empty space. fit() 
 
 ## 2026-10-22: burn-up shake settles
 His report: after the third miss the screen kept shaking on END OF LINE, so it could not be read. body.burning now shakes 2 s (burnshake x22) then eases still over 1 s (burnsettle); still by 3 s, before the blackout and END OF LINE. style.css?v=5. Checked in the browser (transform none from 3.2 s on).
+
+## 2026-10-22: END OF LINE says how far and gives feedback
+His ask. END OF LINE now shows: "You made it past <planet>" (same distance the window uses: (tier + correct/20)/3), a route bar Earth > Moon > ... > Pluto with the rocket where you stopped and a white tick at your previous best, a line comparing with your best plus encouragement by how far you got, Rank / Cleared / Flight time, a Strong box (games with no misses this flight) and Practice these (each missed challenge with a link to its game). run.log records each result; run.prevBest is kept in finish(). SpaceFlight.places() added. Tests pass; checked by a driven flight at desktop and phone width (phone scrolls inside the END OF LINE screen only).

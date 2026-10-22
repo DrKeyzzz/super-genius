@@ -64,5 +64,6 @@ window.SpaceFlight=(()=>{
   impact(dead){blast=dead?2.4:.5;shake=reduced?0:(dead?22:12)},
   celebrate(){confetti=12;goal=1.1*L},
   rivals(list){rivals=(list||[]).filter(r=>r&&r.name&&r.v>0)},
+  places(){return planets.map(p=>({n:p.n,at:p.at}))},
   reset(){goal=0;Z=0;blast=0;passedMsg=0;document.getElementById('location').textContent='EARTH DEPARTURE';document.getElementById('orbitLabel').textContent='Your next great leap.'}};
 })();

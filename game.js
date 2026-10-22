@@ -55,20 +55,36 @@
   if(d.type==='error')channelError('The channel could not start: '+d.message);
   if(d.type==='result'&&loaded&&!settled)result(d.ok,d.detail);
  }
- function result(ok,detail){settled=true;clearTimeout(bootTimer);if(ok){run.correct++;SpaceFlight.boost()}else{run.lives--;document.body.classList.add('hit');setTimeout(()=>document.body.classList.remove('hit'),500);SpaceFlight.impact(run.lives===0);HullFX.hit(run.lives===0)}run.index++;sync();saveFlight();
+ function result(ok,detail){settled=true;clearTimeout(bootTimer);if(!run.lab)(run.log||(run.log=[])).push({id:run.order[run.index],ok});if(ok){run.correct++;SpaceFlight.boost()}else{run.lives--;document.body.classList.add('hit');setTimeout(()=>document.body.classList.remove('hit'),500);SpaceFlight.impact(run.lives===0);HullFX.hit(run.lives===0)}run.index++;sync();saveFlight();
   // the third mistake: the ship burns up in the atmosphere, then END OF LINE (no feedback screen in between)
   if(!ok&&!run.lives&&!run.lab){$('liveStatus').textContent='HULL FAILURE';HullFX.burn(finish);return}
   
   feedbackTimer=setTimeout(()=>{removeFrame();show('feedback');$('retryChannel').hidden=true;$('next').hidden=false;$('verdict').textContent=ok?'SIGNAL CLEARED':'HULL IMPACT';$('resultTitle').textContent=ok?'That’s genius.':run.lives?'Keep your nerve.':'Hull failure.';$('resultText').textContent=ok?current.label+' complete.':run.lives?`${run.lives} ${run.lives===1?'life':'lives'} remaining. The next channel is waiting.`:'Three mistakes. Your flight ends here.';$('resultDetail').textContent=detail||'';$('next').textContent=run.lab?'Return to flight lab →':run.lives===0?'Flight report →':run.index>=run.order.length?'Claim your rank →':'Next channel →';$('next').focus()},ok?1900:run.lives?2100:2900);
  }
- function finish(){removeFrame();if(run.lab){home();return}const won=run.lives>0&&run.index===run.order.length;saved.flight=null;const best=saved.best[run.tier];if(!best||run.correct>best.correct||(run.correct===best.correct&&run.lives>best.lives))saved.best[run.tier]={correct:run.correct,lives:run.lives,attempted:run.index,at:new Date().toISOString(),won};
+ function finish(){removeFrame();if(run.lab){home();return}const won=run.lives>0&&run.index===run.order.length;saved.flight=null;const best=saved.best[run.tier];run.prevBest=best?best.correct:null;if(!best||run.correct>best.correct||(run.correct===best.correct&&run.lives>best.lives))saved.best[run.tier]={correct:run.correct,lives:run.lives,attempted:run.index,at:new Date().toISOString(),won};
   if(won){saved.earned[run.tier]=true;saved.unlocked=Math.max(saved.unlocked,Math.min(2,run.tier+1));selected=Math.min(2,run.tier+1)}persist();show('finish');$('quit').hidden=true;$('finish').className='screen finish '+(won?'epic':'fail');$('medal').textContent=won?'✦':'✧';$('finishLabel').textContent=won?'RANK EARNED':'FLIGHT ENDED';$('finishTitle').textContent=won?tiers[run.tier].name:'You’ll fly again.';$('finishText').textContent=won?(run.tier===2?'Every channel. Every discipline. You earned the highest rank in the fleet.':`${run.correct}/${catalog.length} correct. ${tiers[run.tier+1].name} is now unlocked.`):`${run.correct} correct across ${run.index} challenges. Review your games and launch another flight.`;$('liveStatus').textContent='RECORD SAVED ON THIS DEVICE';if(won)SpaceFlight.celebrate();else endOfLine();$('again').focus()
  }
  // END OF LINE: the black screen after the ship burns up, with how far this flight got
- function endOfLine(){const best=saved.best[run.tier],row=(k,v)=>{const dt=document.createElement('dt'),dd=document.createElement('dd');dt.textContent=k;dd.textContent=v;$('eolStats').append(dt,dd)};
-  $('eolWhy').textContent=`Your ship burned up on challenge ${run.index} of ${run.order.length}.`;$('eolStats').replaceChildren();
-  row('Rank',tiers[run.tier].name);row('Challenges cleared',`${run.correct} of ${run.order.length}`);row('Farthest point',String($('location').textContent||'Earth departure').toLowerCase().replace(/^./,c=>c.toUpperCase()));
-  row('Flight time',(m=>`${Math.floor(m/60)}:${String(m%60).padStart(2,'0')}`)(Math.round((Date.now()-run.started)/1000)));row('Your best',best?`${best.correct} of ${catalog.length}`:'This flight');
+ function endOfLine(){const n=run.order.length,v=(run.tier+run.correct/catalog.length)/3,places=SpaceFlight.places(),log=run.log||[],el=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e};
+  const reached=places.filter(p=>p.at<=v).at(-1);$('eolWhy').textContent=`Your ship burned up on challenge ${run.index} of ${n}.`;
+  $('eolFar').textContent=reached?`You made it past ${reached.n==='Asteroid belt'?'the Asteroid belt':reached.n==='Beyond'?'Pluto':reached.n==='Moon'?'the Moon':reached.n}`:'You cleared Earth’s atmosphere';
+  // the route: Earth, then each planet; the lit part is how far this flight went, the white tick is your best
+  const track=$('eolTrack');track.replaceChildren();const stops=[{n:'Earth',at:0},...places.map(p=>({n:p.n==='Asteroid belt'?'Asteroids':p.n==='Beyond'?'Pluto':p.n,at:p.at}))];
+  const line=el('div','eol-line'),fill=el('div','eol-fill');fill.style.width=(v*100).toFixed(1)+'%';line.append(fill);
+  if(run.prevBest!=null){const bv=(run.tier+run.prevBest/catalog.length)/3,tick=el('div','eol-best');tick.style.left=(bv*100).toFixed(1)+'%';tick.title='Your best';line.append(tick)}
+  const ship=el('div','eol-ship','🚀');ship.style.left=(v*100).toFixed(1)+'%';line.append(ship);
+  stops.forEach(p=>{const s=el('div','eol-stop'+(p.at<=v?' on':''));s.style.left=(p.at*100).toFixed(1)+'%';s.append(el('i'),el('span','',p.n));line.append(s)});track.append(line);
+  const toGo=n-run.correct,next=run.tier<2?tiers[run.tier+1].name:'the top rank',pb=run.prevBest,frac=run.correct/n;
+  $('eolSay').textContent=(pb==null?'Your first flight on this tier is on the board. ':run.correct>pb?`New personal best! ${run.correct-pb} farther than before. `:run.correct===pb?'You tied your best. ':`Your best is ${pb}. Just ${pb-run.correct} short of it. `)
+   +(frac<.25?'Every pilot burns up on the early flights. Each launch takes you farther.':frac<.5?'Solid start. Fix the weak spots below and you will pass this point.':frac<.75?'Over halfway. You have the skills; now it is about steady nerves.':`So close! ${toGo} more and ${run.tier<2?next+' unlocks':'you earn the top rank'}.`);
+  $('eolStats').replaceChildren();const row=(k,x)=>{$('eolStats').append(el('dt','',k),el('dd','',x))};
+  row('Rank',tiers[run.tier].name);row('Cleared',`${run.correct} of ${n}`);row('Flight time',(m=>`${Math.floor(m/60)}:${String(m%60).padStart(2,'0')}`)(Math.round((Date.now()-run.started)/1000)));
+  // feedback: games with no misses, and the challenges that cost a life with a link to practise them
+  const fb=$('eolFeedback');fb.replaceChildren();const item=id=>catalog.find(c=>c.id===id),games={};
+  log.forEach(r=>{const c=item(r.id);if(!c)return;const g=games[c.name]||(games[c.name]={ok:0,miss:0});r.ok?g.ok++:g.miss++});
+  const strong=Object.entries(games).filter(([,g])=>g.ok&&!g.miss).map(([k])=>k),misses=log.filter(r=>!r.ok).map(r=>item(r.id)).filter(Boolean);
+  if(strong.length){const b=el('div','eol-box good');b.append(el('h3','','Strong'),el('p','',strong.join(' · ')));fb.append(b)}
+  if(misses.length){const b=el('div','eol-box work'),ul=el('ul');b.append(el('h3','','Practice these'));misses.forEach(c=>{const li=el('li'),a=el('a','',`Practice in ${c.name} →`);a.href=`../${c.engine}/`;li.append(el('b','',c.label),a);ul.append(li)});b.append(ul);fb.append(b)}
   $('eol').hidden=false;$('eolAgain').focus()}
  function home(){removeFrame();$('eol').hidden=true;HullFX.reset();run=null;show('lobby');$('quit').hidden=true;$('channelName').textContent='MISSION CONTROL';$('progress').textContent='ONE FLIGHT · EVERY SKILL';$('liveStatus').textContent='LOCAL BUILD · UNPUBLISHED';$('tierStatus').textContent='SYSTEMS READY';document.body.dataset.damage='0';$('hull').textContent='HULL 100% ● ● ●';$('rank').textContent='FLIGHT DECK 09';SpaceFlight.reset();SpaceFlight.rivals(rivals());renderTiers()}
  $('launch').onclick=()=>begin();$('labLaunch').onclick=()=>begin(true);$('next').onclick=()=>{if(run.lab||run.lives===0||run.index>=run.order.length)finish();else loadChannel()};$('retryChannel').onclick=loadChannel;$('again').onclick=home;$('eolHome').onclick=home;$('eolAgain').onclick=()=>{const t=run?run.tier:selected;home();selected=t;renderTiers();begin()};
