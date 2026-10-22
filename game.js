@@ -47,8 +47,8 @@
  // a rank passed mid-flight: a banner flashes in the window and the flight keeps going
  function rankUp(name){const b=$('rankUp');b.innerHTML=`<small>RANK EARNED</small><b>${name}</b>`;b.hidden=false;b.classList.remove('show');void b.offsetWidth;b.classList.add('show');clearTimeout(rankUp.t);rankUp.t=setTimeout(()=>{b.hidden=true},3400)}
  // Other pilots to pass, placed where their best flight ended (v: right answers / 20).
- // SAMPLE pilots for the local build only; the online Music Theory Super Genius board replaces them before publishing.
- const SAMPLE_PILOTS=[['MAYA R.',1],['JAYDEN K.',2],['ZOE P.',3],['LIAM T.',4],['ARIA S.',6],['NOAH B.',8],['EVA M.',9],['KAI D.',12],['LUNA G.',15],['OMAR F.',18]];
+ // No other pilots until the online Music Theory Super Genius board exists (his pick: no made-up names on the live site).
+ const SAMPLE_PILOTS=[];
  function rivals(){const list=SAMPLE_PILOTS.map(([name,c])=>({name,v:c/N}));if(saved.best)list.push({name:'YOUR BEST',v:saved.best.correct/N,me:true});return list}
  function saveFlight(){if(!run||run.lab)return;saved.flight={...run};persist()}
  function begin(lab=false){removeFrame();if(lab){run={index:0,lives:3,correct:0,order:[$('labChannel').value],lab:true,started:Date.now()}}else if(saved.flight){run={...saved.flight}}else{run={index:0,lives:3,correct:0,order:deck().map(c=>c.id),lab:false,started:Date.now(),log:[]}}if(run.lives===0||run.index>=run.order.length){finish();return}loadChannel()}
@@ -100,7 +100,7 @@
   if(strong.length){const b=el('div','eol-box good');b.append(el('h3','','Strong'),el('p','',strong.join(' · ')));fb.append(b)}
   if(misses.length){const b=el('div','eol-box work'),ul=el('ul');b.append(el('h3','','Practice these'));misses.forEach(c=>{const li=el('li'),a=el('a','',`Practice in ${c.name} →`);a.href=`../${c.engine}/`;li.append(el('b','',c.label),a);ul.append(li)});b.append(ul);fb.append(b)}
   $('eol').hidden=false;$('eolAgain').focus()}
- function home(){removeFrame();$('eol').hidden=true;HullFX.reset();run=null;show('lobby');$('quit').hidden=true;$('channelName').textContent='MISSION CONTROL';$('progress').textContent='ONE FLIGHT · EVERY SKILL';$('liveStatus').textContent='LOCAL BUILD · UNPUBLISHED';$('tierStatus').textContent='SYSTEMS READY';document.body.dataset.damage='0';$('hull').textContent='HULL 100% ● ● ●';$('rank').textContent='FLIGHT DECK 09';SpaceFlight.reset();SpaceFlight.rivals(rivals());renderLobby()}
+ function home(){removeFrame();$('eol').hidden=true;HullFX.reset();run=null;show('lobby');$('quit').hidden=true;$('channelName').textContent='MISSION CONTROL';$('progress').textContent='ONE FLIGHT · EVERY SKILL';$('liveStatus').textContent='RECORDS SAVE ON THIS DEVICE';$('tierStatus').textContent='SYSTEMS READY';document.body.dataset.damage='0';$('hull').textContent='HULL 100% ● ● ●';$('rank').textContent='FLIGHT DECK 09';SpaceFlight.reset();SpaceFlight.rivals(rivals());renderLobby()}
  $('launch').onclick=()=>begin();$('labLaunch').onclick=()=>begin(true);$('next').onclick=()=>{if(run.lab||run.lives===0||run.index>=run.order.length)finish();else loadChannel()};$('retryChannel').onclick=loadChannel;$('again').onclick=home;$('eolHome').onclick=home;$('eolAgain').onclick=()=>{home();begin()};
  $('quit').onclick=()=>{if(!run)return;removeFrame();if(!run.lab){saved.flight=null;persist()}home()};
  $('boardBtn').onclick=()=>{if(run)return;show('board');$('records').replaceChildren();const card=(k,x)=>{const a=document.createElement('article'),b=document.createElement('b'),s=document.createElement('span');b.textContent=k;s.textContent=x;a.append(b,s);$('records').append(a)};const bf=saved.best;
