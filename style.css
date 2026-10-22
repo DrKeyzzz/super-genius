@@ -18,3 +18,10 @@
 .eol-box p{margin:0;color:#ddd}.eol-box ul{list-style:none;margin:0;padding:0;display:grid;gap:8px}.eol-box li{display:flex;flex-direction:column}
 .eol-box li b{color:#eee;font-weight:600}.eol-box li a{color:#a5e7d8;font-size:13px;text-decoration:none}.eol-box li a:hover{text-decoration:underline}
 @media(max-height:760px){#eol h2{font-size:clamp(32px,6vw,56px);margin:8px 0}#eolWhy{margin-bottom:10px}#eolFar{margin-bottom:10px}}
+
+/* one expert flight: rank cards show earned ranks; a banner flashes in the window when one is earned mid-flight */
+.tier.earned{background:#2a2614;border-color:#ffd789}.tier.earned small:first-child{color:#ffd789}
+#rankUp{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:5;text-align:center;padding:10px 26px;border:1px solid #ffd789;border-radius:12px;background:#120f06cc;box-shadow:0 0 30px #ffd78966;pointer-events:none}
+#rankUp small{display:block;font-size:11px;letter-spacing:.3em;color:#ffd789}#rankUp b{display:block;font-size:clamp(18px,2.6vw,28px);color:#fff4d6}
+#rankUp.show{animation:rankup 3.4s ease-out forwards}@keyframes rankup{0%{opacity:0;transform:translate(-50%,-50%) scale(.6)}10%{opacity:1;transform:translate(-50%,-50%) scale(1.08)}18%{transform:translate(-50%,-50%) scale(1)}80%{opacity:1}100%{opacity:0}}
+@media(prefers-reduced-motion:reduce){#rankUp.show{animation:none}}

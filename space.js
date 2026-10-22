@@ -6,9 +6,9 @@ window.SpaceFlight=(()=>{
  const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
  const L=600;   // the whole journey (all three tiers) in world units; one challenge is about 10
  let Z=0,goal=0,speed=0,blast=0,confetti=0,shake=0,flare=0,rivals=[],passedMsg=0;
- const planets=[{at:.1,n:'Moon',r:2.2,a:-.6,c:['#f4f4f4','#b9b9c0','#5b5b65']},{at:.24,n:'Mars',r:2,a:2.4,c:['#ffb27a','#d2552b','#6e2412']},{at:.38,n:'Asteroid belt',belt:1},
-  {at:.52,n:'Jupiter',r:5.5,a:-2.3,c:['#f1e2c8','#c99a6b','#7a4a2a'],bands:1},{at:.65,n:'Saturn',r:4.5,a:.7,c:['#f6e3b4','#d7b878','#7a6338'],ring:1},
-  {at:.77,n:'Uranus',r:3.2,a:-.4,c:['#d8fbff','#7fd6e0','#2f7f8c']},{at:.88,n:'Neptune',r:3.2,a:2.8,c:['#9fb8ff','#3f5fe0','#172a7a']},{at:.98,n:'Beyond',r:1.1,a:1.5,c:['#f2e2d0','#b89c86','#5e4a3c']}];
+ const planets=[{at:.1,n:'Moon',r:2.2,a:-.6,c:['#f4f4f4','#b9b9c0','#5b5b65']},{at:.25,n:'Mars',r:2,a:2.4,c:['#ffb27a','#d2552b','#6e2412']},{at:.35,n:'Asteroid belt',belt:1},
+  {at:.5,n:'Jupiter',r:5.5,a:-2.3,c:['#f1e2c8','#c99a6b','#7a4a2a'],bands:1},{at:.6,n:'Saturn',r:4.5,a:.7,c:['#f6e3b4','#d7b878','#7a6338'],ring:1},
+  {at:.7,n:'Uranus',r:3.2,a:-.4,c:['#d8fbff','#7fd6e0','#2f7f8c']},{at:.85,n:'Neptune',r:3.2,a:2.8,c:['#9fb8ff','#3f5fe0','#172a7a']},{at:.98,n:'Beyond',r:1.1,a:1.5,c:['#f2e2d0','#b89c86','#5e4a3c']}];
  const rocks=Array.from({length:90},()=>({a:Math.random()*6.28,r:1.6+Math.random()*3.5,z:.38*L+Math.random()*20,s:.03+Math.random()*.15}));
  const stars=Array.from({length:220},()=>({a:Math.random()*6.28,r:.5+Math.random()*7,z:Math.random()*40}));
  let drift=0;   // stars keep moving even between answers
