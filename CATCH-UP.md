@@ -39,3 +39,6 @@ game.js fit(): the channel iframe is laid out on a bigger virtual screen and CSS
 
 ## 2026-10-21 night: fit fix for clipped controls
 His screenshot: Brainwaves progressions buttons cut off at the bottom (Brainwaves clips, it never scrolls). need() now also measures visible buttons/text bottoms (skips full-screen canvases); fit watches every 400 ms for the whole challenge. All 20 channels OK at 1700x960 (top tier) and 1280x640 (first tier).
+
+## 2026-10-22: spacing in the monitor
+His screenshot: Scale Quest staff card small at the top with empty space. fit() now grows small content once (up to 1.45x, content box < 78% of height and 85% of width) and centres the visible content; if growing causes overflow (Big Score resizes itself) it returns to 1x. All 20 channels OK (nothing cut, no scroll) at 1700x1100 (top tier) and 1280x640 (first tier).
