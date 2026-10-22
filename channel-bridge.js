@@ -45,7 +45,7 @@
   nextRound(true);hide('.hud,#b-exit,#b-cnext,#b-next');
  }
  function bigScore(){
-  S.mode='practice';S.started=true;S.settings.mission=config.kind==='melody'?'melody':'rhythm';S.settings.level=['easy','hard','extreme'][config.tier];S.settings.measures=config.tier===0?2:4;S.settings.type='mixed';
+  S.mode='practice';S.started=true;S.settings.mission=config.kind==='melody'?'melody':'rhythm';S.settings.level=['easy','hard','extreme'][config.tier];S.settings.measures=2;   // two bars, like Rooftop, so the flight stays shortS.settings.type='mixed';
   if(config.kind==='melody'){
    S.settings.mel.level=['five','vault','master'][config.tier];S.settings.mel.mode='both';S.settings.mel.showRhythm=false;setApp('melody');melNew();
    const check=melCheck;melCheck=function(){const before=S.mel.checked;check();if(!before&&S.mel.checked){const g=melGrade(S.mel.q,S.mel.ans);finish(g.pc===g.n&&g.rc===g.n,`${g.pc}/${g.n} pitches · ${g.rc}/${g.n} rhythms`)}};
@@ -53,6 +53,11 @@
    S.app='rhythm';showView('play');loadQuestion(generateRhythm(['4/4','6/8','9/8','12/8'][rand(4)],S.settings.measures,null,S.settings.level));
    const check=onCheck;onCheck=function(){const before=S.checked;check();if(!before&&S.checked)finish(S.answer.every((id,i)=>id===S.q.cells[i]),`${S.answer.filter((id,i)=>id===S.q.cells[i]).length}/${S.answer.length} rhythm cells`)};
   }
+  // 4 listens per dictation (the key-setting chords never count); the button shows how many are left
+  const LISTENS=4;let listens=0;const isChecked=()=>config.kind==='melody'?S.mel.checked:S.checked;
+  const listenUI=()=>{const left=LISTENS-listens,b=els.playsBadge;if(isChecked())return;b.hidden=false;b.textContent=left;els.playQBtn.disabled=left<=0;els.playQBtn.title=left>0?`${left} of ${LISTENS} listens left`:'No listens left'};
+  const listen=()=>{if(isChecked())return true;if(listens>=LISTENS){toast('No listens left. Finish it from memory.');return false}listens++;setTimeout(listenUI);return true};
+  const pq=playQuestion;playQuestion=function(){if(listen())pq()};const mp=melPlay;melPlay=function(who){if(who!=='question'||listen())mp(who)};setInterval(listenUI,500);
   updateUI();fitScreen(true);hide('#setup,#ready,#appTabs,#challengeBtn,#moreBtn,#mwBtn,#teacherBtn,#whoBtn,#agentStrip,.agent-id,.spy-status,#reportBtn');const line=document.getElementById('statsLine');if(line)line.parentElement.style.display='none';requestAnimationFrame(()=>{fitScreen(true);if(innerWidth>700)setZoom(Math.min(zoomNow,.8));window.scrollTo(0,0)});
  }
  function rooftop(){

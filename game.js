@@ -31,10 +31,16 @@
    const k=fitK*Math.min(vh/h,vw/w);fitTx=fitTy=0;if(fitWide&&k<.62){fitWide=false;fitK=1;apply(W,H);continue}fitK=Math.max(.4,k-.002);apply(W,H)}}
  function fitSoon(){clearInterval(fitTimer);fitK=1;fitWide=true;fitGrown=false;fitTx=fitTy=0;if(frame){frame.style.transform='';frame.style.width='';frame.style.height=''}fitTimer=setInterval(fit,400)}   // keeps watching the whole challenge: a result panel or new row that appears late also gets fitted
  addEventListener('resize',()=>{if(frame&&!$('channelHost').hidden)fitSoon()});
- function removeFrame(){clearTimeout(bootTimer);clearInterval(fitTimer);if(frame){frame.remove();frame=null}clearTimeout(feedbackTimer)}
+ function removeFrame(){clearTimeout(bootTimer);stopClock();clearInterval(fitTimer);if(frame){frame.remove();frame=null}clearTimeout(feedbackTimer)}
  const fmt=ms=>(t=>`${Math.floor(t/60)}:${String(t%60).padStart(2,'0')}`)(Math.round(ms/1000));
  // ranks by distance: past Mars (5 right), past Jupiter (10 right), and surviving all 20 challenges
  function ranksFor(r){return tiers.map((t,i)=>i<2?r.correct>=t.at:r.lives>0&&r.index>=r.order.length)}
+ // the 3-minute clock on both dictations: a ring drains in the monitor bar; running out counts as a miss
+ const CLOCK_MS=180000;let clockTimer=null;
+ function stopClock(){clearInterval(clockTimer);clockTimer=null;$('dictClock').hidden=true}
+ function startClock(){stopClock();const end=Date.now()+CLOCK_MS,c=$('dictClock');c.hidden=false;
+  const tick=()=>{const left=Math.max(0,end-Date.now());c.style.setProperty('--p',(left/CLOCK_MS).toFixed(4));c.classList.toggle('low',left<30000);$('dictTime').textContent=fmt(left);
+   if(!left){stopClock();if(!settled&&run)result(false,'Time ran out: 3 minutes per dictation.')}};tick();clockTimer=setInterval(tick,250)}
  function renderLobby(){$('tiers').replaceChildren();tiers.forEach((t,i)=>{const d=document.createElement('div');d.className='tier'+(saved.ranks[i]?' earned':'');d.innerHTML=`<small>${saved.ranks[i]?'✦ EARNED':'RANK 0'+(i+1)}</small><b>${t.name}</b><small>${t.goal}</small>`;$('tiers').append(d)});
   $('launch').textContent=saved.flight?'Resume saved flight →':'Launch flight →';$('launchNote').textContent=saved.flight?`${saved.flight.index}/${N} attempted · ${saved.flight.lives} lives`:(saved.best?`Your best: ${saved.best.correct} right · `:'')+N+' expert challenges · 3 lives'}
  function sync(){if(!run)return;document.body.dataset.damage=3-run.lives;HullFX.setDamage(3-run.lives);const rk=run.lab?-1:ranksFor(run).lastIndexOf(true),nx=tiers.find((t,i)=>!ranksFor(run)[i]);$('rank').textContent=run.lab?'FLIGHT LAB':rk>=0?tiers[rk].name.toUpperCase():'EXPERT FLIGHT';$('tierStatus').textContent=run.lab?'EXPERT · PRACTICE':nx?`EXPERT · NEXT RANK AT ${nx.where.toUpperCase()}`:'EXPERT · TOP RANK';$('hull').textContent=`HULL ${Math.round(run.lives/3*100)}% ${'● '.repeat(run.lives)}${'○ '.repeat(3-run.lives)}`;$('progress').textContent=run.lab?'FLIGHT LAB · NO RANKING':`${Math.min(run.index+1,run.order.length)} / ${run.order.length} · ${run.correct} CORRECT`;$('quit').hidden=false;SpaceFlight.travel(run.lab?catalog.findIndex(c=>c.id===run.order[0])/N:run.correct/N)}
@@ -47,7 +53,7 @@
  function saveFlight(){if(!run||run.lab)return;saved.flight={...run};persist()}
  function begin(lab=false){removeFrame();if(lab){run={index:0,lives:3,correct:0,order:[$('labChannel').value],lab:true,started:Date.now()}}else if(saved.flight){run={...saved.flight}}else{run={index:0,lives:3,correct:0,order:deck().map(c=>c.id),lab:false,started:Date.now(),log:[]}}if(run.lives===0||run.index>=run.order.length){finish();return}loadChannel()}
  function loadChannel(){removeFrame();settled=false;loaded=false;current=catalog.find(c=>c.id===run.order[run.index]);token=crypto.randomUUID();sync();saveFlight();show('switching');$('channelName').textContent=current.name.toUpperCase();$('switchTitle').textContent=current.name;$('switchDetail').textContent=current.label+' · Expert';
-  frame=document.createElement('iframe');frame.title=current.name+' · '+current.label;frame.setAttribute('allow','autoplay');frame.src='channels/'+current.engine+'.html?v=2';$('channelHost').replaceChildren(frame);
+  frame=document.createElement('iframe');frame.title=current.name+' · '+current.label;frame.setAttribute('allow','autoplay');frame.src='channels/'+current.engine+'.html?v=3';$('channelHost').replaceChildren(frame);
   // The native page must boot and acknowledge configuration before the monitor opens.
   bootTimer=setTimeout(()=>channelError('This channel did not load. Reload it to continue; no life has been lost.'),14000);
  }
@@ -55,11 +61,11 @@
  function receive(e){if(!frame||e.source!==frame.contentWindow||e.origin!==location.origin||!e.data?.superGenius)return;const d=e.data;
   if(d.type==='boot'){frame.contentWindow.postMessage({configureSuper:true,config:config(current,EXPERT,token)},location.origin);return}if(d.token!==token)return;
   if(d.type==='ready'){clearTimeout(bootTimer);loaded=true;setTimeout(()=>{if(!settled&&frame){show('channelHost');frame.focus()}},450)}
-  if(d.type==='started'){$('liveStatus').textContent=current.game==='score'?'FULL DICTATION · SUBMIT WHEN READY':'CHALLENGE IN PROGRESS'}
+  if(d.type==='started'){if(current.game==='score'&&!settled)startClock();$('liveStatus').textContent=current.game==='score'?'FULL DICTATION · SUBMIT WHEN READY':'CHALLENGE IN PROGRESS'}
   if(d.type==='error')channelError('The channel could not start: '+d.message);
   if(d.type==='result'&&loaded&&!settled)result(d.ok,d.detail);
  }
- function result(ok,detail){settled=true;clearTimeout(bootTimer);if(!run.lab)(run.log||(run.log=[])).push({id:run.order[run.index],ok});const had=ranksFor(run);if(ok){run.correct++;SpaceFlight.boost()}else{run.lives--;document.body.classList.add('hit');setTimeout(()=>document.body.classList.remove('hit'),500);SpaceFlight.impact(run.lives===0);HullFX.hit(run.lives===0)}run.index++;const got=run.lab?-1:ranksFor(run).findIndex((x,i)=>i<2&&x&&!had[i]);if(got>=0){saved.ranks[got]=true;rankUp(tiers[got].name)}sync();saveFlight();
+ function result(ok,detail){settled=true;clearTimeout(bootTimer);stopClock();if(!run.lab)(run.log||(run.log=[])).push({id:run.order[run.index],ok});const had=ranksFor(run);if(ok){run.correct++;SpaceFlight.boost()}else{run.lives--;document.body.classList.add('hit');setTimeout(()=>document.body.classList.remove('hit'),500);SpaceFlight.impact(run.lives===0);HullFX.hit(run.lives===0)}run.index++;const got=run.lab?-1:ranksFor(run).findIndex((x,i)=>i<2&&x&&!had[i]);if(got>=0){saved.ranks[got]=true;rankUp(tiers[got].name)}sync();saveFlight();
   // the third mistake: the ship burns up in the atmosphere, then END OF LINE (no feedback screen in between)
   if(!ok&&!run.lives&&!run.lab){$('liveStatus').textContent='HULL FAILURE';HullFX.burn(finish);return}
   

@@ -25,3 +25,8 @@
 #rankUp small{display:block;font-size:11px;letter-spacing:.3em;color:#ffd789}#rankUp b{display:block;font-size:clamp(18px,2.6vw,28px);color:#fff4d6}
 #rankUp.show{animation:rankup 3.4s ease-out forwards}@keyframes rankup{0%{opacity:0;transform:translate(-50%,-50%) scale(.6)}10%{opacity:1;transform:translate(-50%,-50%) scale(1.08)}18%{transform:translate(-50%,-50%) scale(1)}80%{opacity:1}100%{opacity:0}}
 @media(prefers-reduced-motion:reduce){#rankUp.show{animation:none}}
+
+/* dictation clock: a ring that drains over 3 minutes, red in the last 30 seconds */
+#dictClock{display:inline-flex;align-items:center;gap:7px;font:700 13px ui-monospace,Menlo,monospace;color:var(--accent)}
+#dictClock i{width:16px;height:16px;border-radius:50%;background:conic-gradient(currentColor calc(var(--p,1)*360deg),#ffffff22 0)}
+#dictClock.low{color:#ff7a5a;animation:alarm 1s infinite}
