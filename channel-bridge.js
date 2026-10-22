@@ -56,6 +56,8 @@
  function bigScore(){
   S.mode='practice';S.started=true;S.settings.mission=config.kind==='melody'?'melody':'rhythm';S.settings.level=['easy','hard','extreme'][config.tier];S.settings.measures=2;   // two bars, like Rooftop, so the flight stays shortS.settings.type='mixed';
   if(config.kind==='melody'){
+   // expert: no C major or A minor lay-ups; melodies in keys with 2-3 sharps or flats (added to the frozen copy only)
+   if(config.tier===2){Object.assign(MKEYS,{D:{name:'D major',mode:'major',letter:1,tonic:62,sig:2},Bb:{name:'B♭ major',mode:'major',letter:6,tonic:70,sig:-2},A:{name:'A major',mode:'major',letter:5,tonic:69,sig:3},Eb:{name:'E♭ major',mode:'major',letter:2,tonic:63,sig:-3},Bm:{name:'B minor',mode:'minor',letter:6,tonic:71,sig:2},Gm:{name:'G minor',mode:'minor',letter:4,tonic:67,sig:-2},'F#m':{name:'F♯ minor',mode:'minor',letter:3,tonic:66,sig:3},Cm:{name:'C minor',mode:'minor',letter:0,tonic:60,sig:-3}});MLEVELS.master.keys=['D','Bb','A','Eb','Bm','Gm','F#m','Cm']}
    S.settings.mel.level=['five','vault','master'][config.tier];S.settings.mel.mode='both';S.settings.mel.showRhythm=false;setApp('melody');melNew();
    const check=melCheck;melCheck=function(){const before=S.mel.checked;check();if(!before&&S.mel.checked){const g=melGrade(S.mel.q,S.mel.ans);finish(g.pc===g.n&&g.rc===g.n,`${g.pc}/${g.n} pitches · ${g.rc}/${g.n} rhythms`)}};
   }else{
@@ -70,6 +72,8 @@
   updateUI();fitScreen(true);hide('#setup,#ready,#appTabs,#challengeBtn,#moreBtn,#mwBtn,#teacherBtn,#whoBtn,#agentStrip,.agent-id,.spy-status,#reportBtn');const line=document.getElementById('statsLine');if(line)line.parentElement.style.display='none';requestAnimationFrame(()=>{fitScreen(true);if(innerWidth>700)setZoom(Math.min(zoomNow,.8));window.scrollTo(0,0)});
  }
  function rooftop(){
+  window.__superKeyed=config.tier===2&&config.kind!=='rhythm';   // expert sight reading: a real key signature from bar 1, never C
+  if(window.__superKeyed){const hard=EXPERT_KEYS.filter(id=>Math.abs((MAJOR.find(k=>k.id===id)||{}).sig||0)>=3);if(hard.length)EXPERT_KEYS.splice(0,EXPERT_KEYS.length,...hard)}   // 3+ sharps or flats
   const cfg={style:config.kind==='rhythm'?'rhythm':'keys',diff:['medium','hard','expert'][config.tier],clef:config.clef||'treble',mode:'practice',practiceBpm:[64,64,64][config.tier]};lastConfig=cfg;document.body.dataset.view='game';startGame(cfg);G.warmLeft=0;G.heardCheck=true;G.gotInput=true;
   const monitor=setInterval(()=>{if(done){clearInterval(monitor);G.running=false;return}if(!active)return;const st=G.stats;const segment=G.attacks.filter(a=>a.b>=0&&a.b<8),end=Math.max(8,...segment.map(a=>a.b+a.len));if(G.t>=end+.35){for(const a of segment){if(!a.h&&a.pressAt!=null)finishHold(a,end)}const hits=segment.filter(a=>a.j&&a.j!=='M'&&a.j!=='W'&&a.h!=='early').length;const accuracy=hits/Math.max(1,segment.length+st.extra);finish(hits>0&&accuracy>=[.8,.9,.95][config.tier],`${Math.round(accuracy*100)}% over two bars · ${hits}/${segment.length} notes held correctly`);G.running=false}},50);
   hide('.hud,#pause-btn,#quit-btn,#loop-btn,#menu-btn');

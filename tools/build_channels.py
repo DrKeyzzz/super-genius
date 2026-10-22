@@ -18,11 +18,17 @@ for game in ['scale-quest','tidal-tones','earshot-saloon','brainwaves','rhythm-t
         assert end>=0, game
         code=code[:end]+code[end+5:]
         source=source[:main.start(1)]+code+source[main.end(1):]
+    # Super Genius: Rooftop's expert sight reading is keyed from the first bar (the game itself waits until level 2, so a
+    # two-bar challenge would always be in C). The adapter sets window.__superKeyed.
+    if game=='rooftop-runner':
+        for a,b in [('const isKeyChangeBar = k => DIFFS[G.diff].keyed && !rhythmView() && levelOfBar(k) >= 2 && k === firstBar(levelOfBar(k));','const isKeyChangeBar = k => DIFFS[G.diff].keyed && !rhythmView() && (window.__superKeyed ? k === 0 : levelOfBar(k) >= 2 && k === firstBar(levelOfBar(k)));'),('const keyedBar = k => DIFFS[G.diff].keyed && !rhythmView() && levelOfBar(k) >= 2;','const keyedBar = k => DIFFS[G.diff].keyed && !rhythmView() && (window.__superKeyed || levelOfBar(k) >= 2);')]:
+            assert a in source, a
+            source=source.replace(a,b)
     # Cloud configuration is removed from these local component snapshots.
     source=re.sub(r"apiKey:\s*'[^']*'", "apiKey: ''",source)
     # Relative resources remain local to the frozen component folder. Intro playback is suppressed in bootstrap.
     source=source.replace('<head>','<head>\n<meta http-equiv="Content-Security-Policy" content="default-src \'self\' data: blob:; script-src \'self\' \'unsafe-inline\'; connect-src \'none\'; style-src \'self\' \'unsafe-inline\' https://fonts.googleapis.com; font-src \'self\' https://fonts.gstatic.com; img-src \'self\' data: blob:; media-src \'none\'">\n<script src="../channel-bootstrap.js"></script>',1)
     source=re.sub(r'<body([^>]*)>',lambda m:f'<body{m[1]} data-super-engine="{game}">',source,count=1)
-    source=source.replace('</body>','<script src="../channel-bridge.js?v=8"></script></body>')
+    source=source.replace('</body>','<script src="../channel-bridge.js?v=10"></script></body>')
     (root/'channels'/f'{game}.html').write_text(source)
 (root/'channels'/'manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')

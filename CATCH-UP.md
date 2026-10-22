@@ -81,3 +81,6 @@ While a challenge is on (body.playing): flight window is a slim strip clamp(56px
 
 ## 2026-10-22: Earshot table resized for the wide monitor (his ask)
 Bridge earshot() CSS: single-column stage (empty poster column gone), .room = grid [dealer + bubble column | table], .roundtable = grid with the dealer card on the left and the 4 answer cards in one row beside it (labels, timer, actions in the right column). Earshot now at full scale: cards 187 px at 1600x900 (were 110), 150 px at 1280x640; nothing cut in Dealer interval, Crooked Clara, High Noon. Bridge ?v=8. Committed, NOT published.
+
+## 2026-10-22: no lay-ups anywhere (his "never a tonic, nothing in C")
+Audit of all six: Scale Quest + Tidal already hard-keyed (721a69f). New: Rooftop sight reading was always in C in a 2-bar challenge (the game only keys from level 2): frozen copy patched in build_channels.py (window.__superKeyed keys bar 0) and EXPERT_KEYS cut to 3+ accidentals (Db Ab Eb A E B). Big Score melody dictation was C/G/F/Am/Em/Dm: now D Bb A Eb Bm Gm F#m Cm (MKEYS added in the frozen copy, MLEVELS.master.keys). Earshot expert already includes augmented/diminished, mixed clefs, harmonic; Brainwaves at top levels. Bridge ?v=10. Checked in Flight lab. Committed, NOT published.

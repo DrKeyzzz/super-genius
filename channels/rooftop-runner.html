@@ -1398,8 +1398,8 @@ function beatAt(ms) {
 function reanchor(b, ms) { G.aB = b; G.aMs = ms; G.nextClick = null; }
 
 /* ---------- writing the music, one bar at a time ---------- */
-const isKeyChangeBar = k => DIFFS[G.diff].keyed && !rhythmView() && levelOfBar(k) >= 2 && k === firstBar(levelOfBar(k));
-const keyedBar = k => DIFFS[G.diff].keyed && !rhythmView() && levelOfBar(k) >= 2;
+const isKeyChangeBar = k => DIFFS[G.diff].keyed && !rhythmView() && (window.__superKeyed ? k === 0 : levelOfBar(k) >= 2 && k === firstBar(levelOfBar(k)));
+const keyedBar = k => DIFFS[G.diff].keyed && !rhythmView() && (window.__superKeyed || levelOfBar(k) >= 2);
 // Expert deals keys from a shuffled deck: every key once before any repeats, never the same key twice in a row
 function levelKey(L) {
   if (G.levelKeys[L]) return G.levelKeys[L];
@@ -5317,5 +5317,5 @@ headerHints({
 })();
 </script>
 <!-- MTG_FEEDBACK end -->
-<script src="../channel-bridge.js?v=8"></script></body>
+<script src="../channel-bridge.js?v=10"></script></body>
 </html>
