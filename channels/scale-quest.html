@@ -1258,7 +1258,7 @@ html[data-skin="medieval"] .kmap p{margin:6px 0 0;font-size:15px;color:var(--dim
       <h2>TEACHER DASHBOARD</h2>
       <select id="tdClass" aria-label="Class"></select>
       <span class="td-who" id="tdWho"></span>
-      <button class="btn tbtn" id="tdMsgs" type="button" hidden title="Messages with Mr. Milnes (opens the All games dashboard)" onclick="window.open('https://drkeyzzz.github.io/teacher/all/#messages', '_blank', 'noopener')">✉ MESSAGES<span class="mtg-msgn" id="tdMsgN" hidden></span></button>
+      <button class="btn tbtn" id="tdMsgs" type="button" hidden title="Messages with Music Theory Games Support (opens the All games dashboard)" onclick="window.open('https://drkeyzzz.github.io/teacher/all/#messages', '_blank', 'noopener')">✉ MESSAGES<span class="mtg-msgn" id="tdMsgN" hidden></span></button>
       <button class="btn tbtn" id="tdBack" type="button">BACK TO GAME</button>
       <button class="btn tbtn" id="tdSignOut" type="button">SIGN OUT</button>
     </div>
@@ -1482,7 +1482,7 @@ const store = {
 
 /* ---------- class leaderboard (Google Sheet via Apps Script) ---------- */
 // ---------- developer scores ----------
-// Mr. Milnes plays as "Milnes D.". When he posts while signed in with his Google account, the score is marked
+// The developer plays as "Milnes D.". When he posts while signed in with his Google account, the score is marked
 // dev: true and shows on every class's board with a DEV badge. The rules stop anyone else using that name.
 const DEV_NAME = 'Milnes D.', DEV_EMAILS = ['milnesda@eht.k12.nj.us'];
 const isDevName = n => /^\s*milnes\s*d\.?\s*$/i.test(String(n || ''));
@@ -1740,7 +1740,7 @@ function boardTable(list){
 }
 
 /* ---------- student profile (welcome screen) ---------- */
-// One sign-in for all of Mr. Milnes's games on this site: the Rhythm Trainer, Scale Quest and Tidal Tones share this key.
+// One sign-in for all of the games on this site: the Rhythm Trainer, Scale Quest and Tidal Tones share this key.
 const PROFILE_KEY = 'rdt_profile_v1', GUEST_KEY = 'music_guest';
 function getProfile(){
   if(isGuest()) return null;
@@ -3497,7 +3497,7 @@ async function openTeacherView(){
   await tdLoadClasses(); tdRender();
 }
 // "✉ Messages" opens the All games dashboard's Messages tab; the red number is this teacher's unread messages from
-// Mr. Milnes (one read of teacher_threads/<email>; the admin: one query of teacher_threads). Added 2026-10-18.
+// the admin (one read of teacher_threads/<email>; the admin: one query of teacher_threads). Added 2026-10-18.
 async function tdMsgCount() {
   const a = $('#tdMsgs'), n0 = $('#tdMsgN'); if (!a) return; a.hidden = false; let n = 0;
   try {
@@ -3506,7 +3506,7 @@ async function tdMsgCount() {
       : +(((await fs.getDoc(fs.doc(db, 'teacher_threads', TD.email))).data() || {}).unread_teacher) || 0);
   } catch (e) { n = 0; }
   n0.textContent = n > 99 ? '99+' : String(n); n0.hidden = !n;
-  a.setAttribute('aria-label', n ? `Messages, ${n} unread` : 'Messages with Mr. Milnes (opens the All games dashboard)');
+  a.setAttribute('aria-label', n ? `Messages, ${n} unread` : 'Messages with Music Theory Games Support (opens the All games dashboard)');
   tdBoardCount(f => Cloud.run.bind(Cloud)(f), n);
 }
 
@@ -5198,7 +5198,7 @@ headerHints({
     '<div class="mtgfb-panel" role="dialog" aria-modal="true" aria-labelledby="mtgfb-h">' +
       '<div data-view="form">' +
         '<h2 class="mtgfb-h" id="mtgfb-h">Send feedback</h2>' +
-        '<p class="mtgfb-sub">Tell Mr. Milnes what you think of this game.</p>' +
+        '<p class="mtgfb-sub">Tell us what you think of this game.</p>' +
         '<label for="mtgfb-ta" class="mtgfb-sub" style="display:block;margin:0 0 6px">What would make it better?</label>' +
         '<textarea id="mtgfb-ta" class="mtgfb-ta" maxlength="' + MAX + '" placeholder="A few words is plenty"></textarea>' +
         '<div class="mtgfb-row"><span data-role="who"></span><span data-role="count">0 / ' + MAX + '</span></div>' +
@@ -5209,7 +5209,7 @@ headerHints({
       '</div>' +
       '<div data-view="done" hidden>' +
         '<h2 class="mtgfb-h">Thank you!</h2>' +
-        '<p class="mtgfb-sub">Mr. Milnes will read your feedback.</p>' +
+        '<p class="mtgfb-sub">We read every note.</p>' +
         '<div class="mtgfb-acts"><button type="button" class="mtgfb-go" data-role="close">Close</button></div>' +
       '</div>' +
     '</div>';

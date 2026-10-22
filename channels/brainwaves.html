@@ -944,7 +944,7 @@ function showWelcome(keep) {
   $('welcome').hidden = false;
   setTimeout(() => $('w-first').focus(), 50);
 }
-// Mr. Milnes plays as "Milnes D."; posting under that name needs his Google sign-in (the rules check it)
+// The developer plays as "Milnes D."; posting under that name needs his Google sign-in (the rules check it)
 const DEV_NAME = 'Milnes D.', DEV_EMAILS = ['milnesda@eht.k12.nj.us'];
 const isDevName = n => /^\s*milnes\s*d\.?\s*$/i.test(String(n || ''));
 async function devSignIn() { const { auth, authMod } = await fbAuth(); return (await authMod.signInWithPopup(auth, new authMod.GoogleAuthProvider())).user.email; }
@@ -4036,7 +4036,7 @@ const SRUN = (() => {
     '<div class="mtgfb-panel" role="dialog" aria-modal="true" aria-labelledby="mtgfb-h">' +
       '<div data-view="form">' +
         '<h2 class="mtgfb-h" id="mtgfb-h">Send feedback</h2>' +
-        '<p class="mtgfb-sub">Tell Mr. Milnes what you think of this game.</p>' +
+        '<p class="mtgfb-sub">Tell us what you think of this game.</p>' +
         '<label for="mtgfb-ta" class="mtgfb-sub" style="display:block;margin:0 0 6px">What would make it better?</label>' +
         '<textarea id="mtgfb-ta" class="mtgfb-ta" maxlength="' + MAX + '" placeholder="A few words is plenty"></textarea>' +
         '<div class="mtgfb-row"><span data-role="who"></span><span data-role="count">0 / ' + MAX + '</span></div>' +
@@ -4047,7 +4047,7 @@ const SRUN = (() => {
       '</div>' +
       '<div data-view="done" hidden>' +
         '<h2 class="mtgfb-h">Thank you!</h2>' +
-        '<p class="mtgfb-sub">Mr. Milnes will read your feedback.</p>' +
+        '<p class="mtgfb-sub">We read every note.</p>' +
         '<div class="mtgfb-acts"><button type="button" class="mtgfb-go" data-role="close">Close</button></div>' +
       '</div>' +
     '</div>';

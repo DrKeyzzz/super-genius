@@ -667,7 +667,7 @@ html[data-skin="day"] .skin-pop { box-shadow: 0 14px 30px -10px rgba(90,60,20,.4
   <header class="top home-top">
     <div class="mtg-home"><a href="https://drkeyzzz.github.io/" title="All the Music Theory Games"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11 12 3l9 8"/><path d="M5 9.5V21h5v-6h4v6h5V9.5"/></svg>Music Theory Games</a><a href="https://drkeyzzz.github.io/report/" title="See your report: what you're doing well and what to practice next"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg>My Report</a></div>
     <div class="brand">
-      <span class="eyebrow">Mr. Milnes's Music Theory Games</span>
+      <span class="eyebrow">Music Theory Games</span>
       <h1>Earshot Saloon</h1>
       <p class="tagline">Hear the interval. Find the note. Lasso the outlaws.</p>
     </div>
@@ -1148,7 +1148,7 @@ const TOWNS = ['Tumbleweed Flats', 'Minor Mesa', 'Perfect Fifth Flats', 'Half-St
 // Hank's songbook: up to two songs per interval, a song young kids know first, then a pop or movie one.
 // Each song: [title, offsets in semitones from the first note of the interval, lengths in seconds, options].
 // Every song plays its whole opening phrase, so it's recognizable. An empty list means no song is picked yet:
-// Hank plays just the interval. check: true marks a pick Mr. Milnes should confirm by ear.
+// Hank plays just the interval. check: true marks a pick the developer should confirm by ear.
 const HANK = {
   up: {
     m2: [['Jaws', [0, 1, 0, 1, 0, 1, 0, 1, 0, 1], [.5, .5, .4, .4, .3, .3, .2, .2, .15, .6]],
@@ -1188,10 +1188,10 @@ const HANK = {
     TT: [['Purple Haze (guitar intro)', [0, -6, 0, -6, 0, -6, 0, -6], [.28, .28, .28, .28, .28, .28, .28, .6], { check: true }]],
     // Minuet in G (Petzold): D G A B C D G G, E C D E F♯ G G G
     P5: [['Minuet in G', [0, -7, -5, -3, -2, 0, -7, -7, 2, -2, 0, 2, 4, 5, -7, -7], [.5, .25, .25, .25, .25, .5, .5, .6, .5, .25, .25, .25, .25, .5, .5, .9]],
-         // The Flintstones, whistled by Mr. Milnes: "Flint-stones, meet the Flint-stones" = C F, F D C F
+         // The Flintstones, whistled by the developer: "Flint-stones, meet the Flint-stones" = C F, F D C F
          ['The Flintstones', [0, -7, 5, 2, 0, -7], [.47, .85, .6, .3, .75, 1.1]]],
     m6: [],
-    // Nobody Knows the Trouble I've Seen, from Mr. Milnes: E G A C (held), D, E E E, E (held)
+    // Nobody Knows the Trouble I've Seen, from the developer: E G A C (held), D, E E E, E (held)
     M6: [["Nobody Knows the Trouble I've Seen", [0, -9, -7, -4, -2, 0, 0, 0, 0], [.4, .3, .3, 1.2, .3, .3, .3, .3, 1.4]]],
     m7: [],
     M7: [],
@@ -2518,7 +2518,7 @@ function showWelcome(keep) {
   $('welcome').hidden = false;
   setTimeout(() => $('w-first').focus(), 50);
 }
-// Mr. Milnes plays as "Milnes D."; posting under that name needs his Google sign-in (the rules check it)
+// The developer plays as "Milnes D."; posting under that name needs his Google sign-in (the rules check it)
 const DEV_NAME = 'Milnes D.', DEV_EMAILS = ['milnesda@eht.k12.nj.us'];
 const isDevName = n => /^\s*milnes\s*d\.?\s*$/i.test(String(n || ''));
 async function devSignIn() { const { auth, authMod } = await fbAuth(); return (await authMod.signInWithPopup(auth, new authMod.GoogleAuthProvider())).user.email; }
@@ -3577,7 +3577,7 @@ document.fonts?.load('40px "Noto Music"', '\u{1D11E}\u{1D122}♯♭\u{1D12B}\u{1
     '<div class="mtgfb-panel" role="dialog" aria-modal="true" aria-labelledby="mtgfb-h">' +
       '<div data-view="form">' +
         '<h2 class="mtgfb-h" id="mtgfb-h">Send feedback</h2>' +
-        '<p class="mtgfb-sub">Tell Mr. Milnes what you think of this game.</p>' +
+        '<p class="mtgfb-sub">Tell us what you think of this game.</p>' +
         '<label for="mtgfb-ta" class="mtgfb-sub" style="display:block;margin:0 0 6px">What would make it better?</label>' +
         '<textarea id="mtgfb-ta" class="mtgfb-ta" maxlength="' + MAX + '" placeholder="A few words is plenty"></textarea>' +
         '<div class="mtgfb-row"><span data-role="who"></span><span data-role="count">0 / ' + MAX + '</span></div>' +
@@ -3588,7 +3588,7 @@ document.fonts?.load('40px "Noto Music"', '\u{1D11E}\u{1D122}♯♭\u{1D12B}\u{1
       '</div>' +
       '<div data-view="done" hidden>' +
         '<h2 class="mtgfb-h">Thank you!</h2>' +
-        '<p class="mtgfb-sub">Mr. Milnes will read your feedback.</p>' +
+        '<p class="mtgfb-sub">We read every note.</p>' +
         '<div class="mtgfb-acts"><button type="button" class="mtgfb-go" data-role="close">Close</button></div>' +
       '</div>' +
     '</div>';

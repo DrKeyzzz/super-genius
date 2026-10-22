@@ -1070,7 +1070,7 @@ html[data-skin="day"] .mtg-hint { box-shadow: 0 8px 20px -8px rgba(20,40,80,.35)
     <section class="card td">
       <div class="td-head">
         <div><h2>Teacher Dashboard</h2><div class="muted small" id="tdWho"></div></div>
-        <div class="td-head-actions"><button class="btn btn-sm" type="button" id="tdMsgs" hidden title="Messages with Mr. Milnes (opens the All games dashboard)" onclick="window.open('https://drkeyzzz.github.io/teacher/all/#messages', '_blank', 'noopener')">✉ Messages<span class="mtg-msgn" id="tdMsgN" hidden></span></button><button class="btn btn-sm" type="button" id="tdSignOut">Sign out</button><button class="btn btn-sm btn-primary" type="button" id="tdBack">Back to app</button></div>
+        <div class="td-head-actions"><button class="btn btn-sm" type="button" id="tdMsgs" hidden title="Messages with Music Theory Games Support (opens the All games dashboard)" onclick="window.open('https://drkeyzzz.github.io/teacher/all/#messages', '_blank', 'noopener')">✉ Messages<span class="mtg-msgn" id="tdMsgN" hidden></span></button><button class="btn btn-sm" type="button" id="tdSignOut">Sign out</button><button class="btn btn-sm btn-primary" type="button" id="tdBack">Back to app</button></div>
       </div>
       <div class="td-bar">
         <label class="field"><span>Class</span><select id="tdClass"></select></label>
@@ -2947,7 +2947,7 @@ function withTimeout(promise, ms = 12000) {
   return Promise.race([promise, new Promise((_, rej) => setTimeout(() => rej(new Error('The leaderboard took too long to answer.')), ms))]);
 }
 // ---------- developer scores ----------
-// Mr. Milnes plays as "Milnes D.". When he posts while signed in with his Google account, the score is marked
+// The developer plays as "Milnes D.". When he posts while signed in with his Google account, the score is marked
 // dev: true and shows on every class's board with a DEV badge. The rules stop anyone else using that name.
 const DEV_NAME = 'Milnes D.', DEV_EMAILS = ['milnesda@eht.k12.nj.us'];
 const isDevName = n => /^\s*milnes\s*d\.?\s*$/i.test(String(n || ''));
@@ -3237,7 +3237,7 @@ const fmtDate = iso => { const d = new Date(iso); return isNaN(d) ? '' : d.toLoc
 
 // ---------- student profile (welcome screen) ----------
 const PROFILE_KEY = 'rdt_profile_v1';
-// One sign-in for all of Mr. Milnes's games on this site (Rhythm Trainer, Scale Quest, Tidal Tones): they share this key.
+// One sign-in for all of the games on this site (Rhythm Trainer, Scale Quest, Tidal Tones): they share this key.
 function getProfile() { if (isGuest()) return null; try { const p = JSON.parse(store.get(PROFILE_KEY) || 'null'); return p && p.first && p.init ? p : null; } catch (e) { return null; } }
 function setProfile(p) { store.set(PROFILE_KEY, JSON.stringify(p)); try { sessionStorage.removeItem(GUEST_KEY); } catch (e) { /* ignore */ } }
 // Every class this student is in, main class first (max 3); [] when not in a class.
@@ -4425,7 +4425,7 @@ const daysAgo = n => { const d = new Date(); d.setDate(d.getDate() - n); return 
 const relTime = t => { const m = Math.round((Date.now() - t) / 60000); return m < 2 ? 'Active now' : m < 60 ? `${m} min ago` : fmtClock(t); };
 
 // "✉ Messages" opens the All games dashboard's Messages tab; the red number is this teacher's unread messages from
-// Mr. Milnes (one read of teacher_threads/<email>; the admin: one query of teacher_threads). Added 2026-10-18.
+// the admin (one read of teacher_threads/<email>; the admin: one query of teacher_threads). Added 2026-10-18.
 async function tdMsgCount() {
   const a = $('#tdMsgs'), n0 = $('#tdMsgN'); if (!a) return; a.hidden = false; let n = 0;
   try {
@@ -4434,7 +4434,7 @@ async function tdMsgCount() {
       : +(((await fs.getDoc(fs.doc(db, 'teacher_threads', TD.email))).data() || {}).unread_teacher) || 0);
   } catch (e) { n = 0; }
   n0.textContent = n > 99 ? '99+' : String(n); n0.hidden = !n;
-  a.setAttribute('aria-label', n ? `Messages, ${n} unread` : 'Messages with Mr. Milnes (opens the All games dashboard)');
+  a.setAttribute('aria-label', n ? `Messages, ${n} unread` : 'Messages with Music Theory Games Support (opens the All games dashboard)');
   tdBoardCount(async f => { const x = await fb(); return withTimeout(f(x)); }, n);
 }
 
@@ -6416,7 +6416,7 @@ headerHints({
     '<div class="mtgfb-panel" role="dialog" aria-modal="true" aria-labelledby="mtgfb-h">' +
       '<div data-view="form">' +
         '<h2 class="mtgfb-h" id="mtgfb-h">Send feedback</h2>' +
-        '<p class="mtgfb-sub">Tell Mr. Milnes what you think of this game.</p>' +
+        '<p class="mtgfb-sub">Tell us what you think of this game.</p>' +
         '<label for="mtgfb-ta" class="mtgfb-sub" style="display:block;margin:0 0 6px">What would make it better?</label>' +
         '<textarea id="mtgfb-ta" class="mtgfb-ta" maxlength="' + MAX + '" placeholder="A few words is plenty"></textarea>' +
         '<div class="mtgfb-row"><span data-role="who"></span><span data-role="count">0 / ' + MAX + '</span></div>' +
@@ -6427,7 +6427,7 @@ headerHints({
       '</div>' +
       '<div data-view="done" hidden>' +
         '<h2 class="mtgfb-h">Thank you!</h2>' +
-        '<p class="mtgfb-sub">Mr. Milnes will read your feedback.</p>' +
+        '<p class="mtgfb-sub">We read every note.</p>' +
         '<div class="mtgfb-acts"><button type="button" class="mtgfb-go" data-role="close">Close</button></div>' +
       '</div>' +
     '</div>';
