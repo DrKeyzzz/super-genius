@@ -32,6 +32,8 @@
   const rec=record;record=function(n,ok){rec(n,ok);if(done){game.running=false}};
  }
  function earshot(){
+  // the cockpit shrinks the whole channel to fit, so Earshot's own zoom-to-window would fight it: keep the table at its natural size
+  fitGame=()=>{const g=document.getElementById('game');if(g)g.style.zoom=1};fitGame();
   S.diff=['medium','hard','expert'][config.tier];S.clef=config.tier===2?'mixed':'treble';S.mode='trail';startRun();
   if(config.kind==='bluff')dealBluff();else if(config.kind==='noon'){S.handNo=7;S.noon=null;dealNoon()}else dealRegular();
   hide('#trail,.hud,#exit-btn,#menu-btn');

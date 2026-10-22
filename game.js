@@ -6,8 +6,21 @@
  try{if(new URLSearchParams(location.search).get('unlock')==='all')saved.unlocked=2}catch{}
  let selected=0,run=null,frame=null,current=null,token='',settled=false,bootTimer=null,loaded=false,feedbackTimer=null;
  function persist(){try{localStorage.setItem(key,JSON.stringify(saved))}catch{$('liveStatus').textContent='Storage unavailable · keep this tab open'}}
- function show(id){['lobby','channelHost','switching','feedback','finish','board'].forEach(x=>$(x).hidden=x!==id)}
- function removeFrame(){clearTimeout(bootTimer);if(frame){frame.remove();frame=null}clearTimeout(feedbackTimer)}
+ function show(id){['lobby','channelHost','switching','feedback','finish','board'].forEach(x=>$(x).hidden=x!==id);document.body.classList.toggle('playing',id==='channelHost'||id==='switching');if(id==='channelHost')fitSoon()}
+ // NO SCROLLING: the game inside the monitor is drawn on a bigger virtual screen and shrunk to fit, so every channel fits whole.
+ // The shrink is a CSS transform on the frame, so clicks, taps and canvases inside keep working normally.
+ let fitK=1,fitWide=true,fitTimer=null;
+ // Two ways to shrink: "wide" lays the game out on a wider virtual screen (best for ordinary pages); if the game grows taller
+ // as it gets wider (a table that keeps its shape), keep the real width and only add height, centred.
+ function need(){const d=frame.contentDocument,se=d.scrollingElement||d.documentElement;return[Math.max(se.scrollHeight,d.body?d.body.scrollHeight:0),se.scrollWidth]}
+ function apply(W,H){const vw=fitWide?W/fitK:W;frame.style.width=vw+'px';frame.style.height=(H/fitK)+'px';
+  frame.style.transform=fitK<1?`translateX(${fitWide?0:(W-W*fitK)/2}px) scale(${fitK})`:''}
+ function fit(){if(!frame||!frame.contentDocument)return;const host=$('channelHost'),W=host.clientWidth,H=host.clientHeight;if(!W||!H)return;
+  for(let i=0;i<5;i++){const[h,w]=need(),vh=H/fitK,vw=fitWide?W/fitK:W;if(h<=vh+1&&w<=vw+1)return;
+   const k=fitK*Math.min(vh/h,vw/w);if(fitWide&&k<.62){fitWide=false;fitK=1;apply(W,H);continue}fitK=Math.max(.4,k-.002);apply(W,H)}}
+ function fitSoon(){clearInterval(fitTimer);fitK=1;fitWide=true;if(frame){frame.style.transform='';frame.style.width='';frame.style.height=''}let n=0;fitTimer=setInterval(()=>{fit();if(++n>120)clearInterval(fitTimer)},250)}
+ addEventListener('resize',()=>{if(frame&&!$('channelHost').hidden)fitSoon()});
+ function removeFrame(){clearTimeout(bootTimer);clearInterval(fitTimer);if(frame){frame.remove();frame=null}clearTimeout(feedbackTimer)}
  function renderTiers(){ $('tiers').replaceChildren();tiers.forEach((t,i)=>{const b=document.createElement('button');b.className='tier'+(i>saved.unlocked?' locked':'');b.setAttribute('aria-pressed',String(i===selected));b.disabled=i>saved.unlocked;b.innerHTML=`<small>TIER 0${i+1} ${saved.earned[i]?'· EARNED':i>saved.unlocked?'· LOCKED':''}</small><b>${t.name}</b><small>${t.tag}</small>`;b.onclick=()=>{selected=i;renderTiers()};$('tiers').append(b)});$('launch').textContent=saved.flight?'Resume saved flight →':'Launch flight →';$('launchNote').textContent=saved.flight?`${tiers[saved.flight.tier].name} · ${saved.flight.index}/${catalog.length} attempted · ${saved.flight.lives} lives`:catalog.length+' challenges · 3 lives · no overall clock'}
  function sync(){if(!run)return;document.body.dataset.damage=3-run.lives;HullFX.setDamage(3-run.lives);$('rank').textContent=tiers[run.tier].name.toUpperCase();$('tierStatus').textContent=`TIER 0${run.tier+1} / ${tiers[run.tier].name.toUpperCase()}`;$('hull').textContent=`HULL ${Math.round(run.lives/3*100)}% ${'● '.repeat(run.lives)}${'○ '.repeat(3-run.lives)}`;$('progress').textContent=run.lab?'FLIGHT LAB · NO RANKING':`${Math.min(run.index+1,run.order.length)} / ${run.order.length} · ${run.correct} CORRECT`;$('quit').hidden=false;SpaceFlight.travel(run.lab?catalog.findIndex(c=>c.id===run.order[0])/catalog.length:(run.tier+run.correct/catalog.length)/3)}
  // Other pilots to pass, placed where their best flight ended (v: 0..1 across all three tiers).
@@ -17,7 +30,7 @@
  function saveFlight(){if(!run||run.lab)return;saved.flight={...run};persist()}
  function begin(lab=false){removeFrame();if(lab){const tier=Number($('labTier').value);run={tier,index:0,lives:3,correct:0,order:[$('labChannel').value],lab:true,started:Date.now()}}else if(saved.flight){run={...saved.flight}}else{run={tier:selected,index:0,lives:3,correct:0,order:deck().map(c=>c.id),lab:false,started:Date.now()}}if(run.lives===0||run.index>=run.order.length){finish();return}loadChannel()}
  function loadChannel(){removeFrame();settled=false;loaded=false;current=catalog.find(c=>c.id===run.order[run.index]);token=crypto.randomUUID();sync();saveFlight();show('switching');$('channelName').textContent=current.name.toUpperCase();$('switchTitle').textContent=current.name;$('switchDetail').textContent=current.label+' · '+tiers[run.tier].name;
-  frame=document.createElement('iframe');frame.title=current.name+' · '+current.label;frame.setAttribute('allow','autoplay');frame.src='channels/'+current.engine+'.html';$('channelHost').replaceChildren(frame);
+  frame=document.createElement('iframe');frame.title=current.name+' · '+current.label;frame.setAttribute('allow','autoplay');frame.src='channels/'+current.engine+'.html?v=2';$('channelHost').replaceChildren(frame);
   // The native page must boot and acknowledge configuration before the monitor opens.
   bootTimer=setTimeout(()=>channelError('This channel did not load. Reload it to continue; no life has been lost.'),14000);
  }
