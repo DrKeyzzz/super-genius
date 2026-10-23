@@ -1125,7 +1125,7 @@ html[data-skin="medieval"] .kmap p{margin:6px 0 0;font-size:15px;color:var(--dim
 
 <main class="app" id="app">
   <header class="topbar">
-    <div class="mtg-home"><a href="https://drkeyzzz.github.io/" title="All the Music Theory Games"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11 12 3l9 8"/><path d="M5 9.5V21h5v-6h4v6h5V9.5"/></svg>Music Theory Games</a><a href="https://drkeyzzz.github.io/report/" title="See your report: what you're doing well and what to practice next"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg>My Report</a></div>
+    <div class="mtg-home"><a href="https://drkeyzzz.github.io/" title="Music Theory Academy home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11 12 3l9 8"/><path d="M5 9.5V21h5v-6h4v6h5V9.5"/></svg>Music Theory Academy</a><a href="https://drkeyzzz.github.io/report/" title="See your report: what you're doing well and what to practice next"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg>My Report</a></div>
     <h1 class="logo"><span class="a">SCALE</span> <span class="b">QUEST</span><small>SCALES · MODES · DEGREES</small></h1>
     <div class="tools">
       <div class="skin-menu">
@@ -1258,7 +1258,7 @@ html[data-skin="medieval"] .kmap p{margin:6px 0 0;font-size:15px;color:var(--dim
       <h2>TEACHER DASHBOARD</h2>
       <select id="tdClass" aria-label="Class"></select>
       <span class="td-who" id="tdWho"></span>
-      <button class="btn tbtn" id="tdMsgs" type="button" hidden title="Messages with Music Theory Games Support (opens the All games dashboard)" onclick="window.open('https://drkeyzzz.github.io/teacher/all/#messages', '_blank', 'noopener')">✉ MESSAGES<span class="mtg-msgn" id="tdMsgN" hidden></span></button>
+      <button class="btn tbtn" id="tdMsgs" type="button" hidden title="Messages with Music Theory Academy Support (opens the All games dashboard)" onclick="window.open('https://drkeyzzz.github.io/teacher/all/#messages', '_blank', 'noopener')">✉ MESSAGES<span class="mtg-msgn" id="tdMsgN" hidden></span></button>
       <button class="btn tbtn" id="tdBack" type="button">BACK TO GAME</button>
       <button class="btn tbtn" id="tdSignOut" type="button">SIGN OUT</button>
     </div>
@@ -1331,7 +1331,7 @@ html[data-skin="medieval"] .kmap p{margin:6px 0 0;font-size:15px;color:var(--dim
     <p class="werr" id="wError" role="alert"></p>
     <button class="btn start" id="wGo" type="submit">PRESS START</button>
     <button class="btn wguest" id="wGuest" type="button">PLAY AS GUEST</button>
-    <p class="wnote">Guests' practice and scores aren't saved. Only first names and last initials are stored. One sign-in works for every game on Music Theory Games.</p>
+    <p class="wnote">Guests' practice and scores aren't saved. Only first names and last initials are stored. One sign-in works for every game on Music Theory Academy.</p>
   </form>
 </div>
 <div class="overlay" id="overlay" hidden><div class="opanel" id="opanel" role="dialog" aria-modal="true"></div></div>
@@ -3506,7 +3506,7 @@ async function tdMsgCount() {
       : +(((await fs.getDoc(fs.doc(db, 'teacher_threads', TD.email))).data() || {}).unread_teacher) || 0);
   } catch (e) { n = 0; }
   n0.textContent = n > 99 ? '99+' : String(n); n0.hidden = !n;
-  a.setAttribute('aria-label', n ? `Messages, ${n} unread` : 'Messages with Music Theory Games Support (opens the All games dashboard)');
+  a.setAttribute('aria-label', n ? `Messages, ${n} unread` : 'Messages with Music Theory Academy Support (opens the All games dashboard)');
   tdBoardCount(f => Cloud.run.bind(Cloud)(f), n);
 }
 
