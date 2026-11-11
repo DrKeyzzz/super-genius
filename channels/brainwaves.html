@@ -2174,7 +2174,7 @@ function drawTune() {
 function setTnStatus(html, cls) { const e = $('tn-status'); e.innerHTML = html; e.className = 'tn-status ' + (cls || ''); }
 /* the Tuner's sound: real recordings of each instrument (tonejs-instruments, CC BY 3.0), re-pitched to the exact frequency,
    through a warm room reverb. The target and the student's string use the same recording, so the gap between them is exact. */
-const T_SMP = 'https://nbrosowsky.github.io/tonejs-instruments/samples/';
+const T_SMP = (location.port === '8770' ? '/hub' : '') + '/sounds/instruments/';
 const T_SETS = {
   guitar: [['guitar-acoustic', 'E2 A2 D3 G3 B3 E4']], bass: [['bass-electric', 'E1 As1 Cs2 G2']], ukulele: [['guitar-nylon', 'Gs4 Cs4 E4 A4']],
   violin: [['violin', 'G3 C4 E4 A4 E5']], viola: [['cello', 'C3 G3'], ['violin', 'C4 E4 A4']], cello: [['cello', 'C2 G2 D3 A3']],
@@ -2454,7 +2454,7 @@ const PAV = (() => {
   const usesHints = () => V.rung >= HINT_FROM, timed = () => !prac() && L().t > 0;
 
   /* ---------- sound: real recordings (CC BY 3.0), velocity shapes loudness and brightness, small room reverb ---------- */
-  const SAL = 'https://tonejs.github.io/audio/salamander/', TJI = 'https://nbrosowsky.github.io/tonejs-instruments/samples/';
+  const SAL = (location.port === '8770' ? '/hub' : '') + '/sounds/salamander/', TJI = (location.port === '8770' ? '/hub' : '') + '/sounds/instruments/';
   const NIX = { C: 0, Cs: 1, D: 2, Ds: 3, E: 4, F: 5, Fs: 6, G: 7, Gs: 8, A: 9, As: 10, B: 11 };
   const toMidi = n => { const [, p, o] = n.match(/^([A-G]s?)(\d)$/); return 12 * (+o + 1) + NIX[p]; };
   const SET = (base, names) => names.split(' ').map(n => ({ m: toMidi(n), url: base + n + '.mp3' }));

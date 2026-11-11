@@ -584,10 +584,10 @@ html[data-skin="day"] .skin-pop { box-shadow: 0 14px 30px -10px rgba(90,60,20,.4
    install with shared/apply-sound.py). window.MTGSound:
      list() -> [{key,name}]   get() / set(key) (localStorage mtg_sound_v1, fires 'mtgsound' on window)
      ctx(audioContext)  out(node)  preload(lo, hi) -> Promise  note(midi, when, dur, vel = 90, dest)
-   Recordings: Salamander Grand + tonejs-instruments (CC BY 3.0), vibraphone from VCSL (CC0, hosted on drkeyzzz.github.io/sounds). */
+   Recordings: Salamander Grand + tonejs-instruments (CC BY 3.0), vibraphone from VCSL (CC0); every recording is a copy hosted on this site in hub/sounds/. */
 (function () {
-  var KEY = 'mtg_sound_v1', SAL = 'https://tonejs.github.io/audio/salamander/', TJI = 'https://nbrosowsky.github.io/tonejs-instruments/samples/';
-  var VIB = location.hostname === 'localhost' ? '/hub/sounds/vibes/' : 'https://drkeyzzz.github.io/sounds/vibes/';
+  var KEY = 'mtg_sound_v1', SAL = (location.port === '8770' ? '/hub' : '') + '/sounds/salamander/', TJI = (location.port === '8770' ? '/hub' : '') + '/sounds/instruments/';
+  var VIB = (location.port === '8770' ? '/hub' : '') + '/sounds/vibes/';
   var NIX = { C: 0, Cs: 1, D: 2, Ds: 3, E: 4, F: 5, Fs: 6, G: 7, Gs: 8, A: 9, As: 10, B: 11 };
   function toMidi(n) { var p = n.match(/^([A-G]s?)(\d)$/); return 12 * (+p[2] + 1) + NIX[p[1]]; }
   function SET(base, names) { return names.split(' ').map(function (n) { return { m: toMidi(n), url: base + n + '.mp3' }; }); }
