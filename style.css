@@ -64,3 +64,29 @@ header nav a{white-space:nowrap}@media(max-width:1000px){header>strong{display:n
 body.playing #flightWindow{height:clamp(56px,9svh,110px);border-width:6px;border-radius:40px 40px 18px 18px;margin-bottom:6px}
 body.playing footer{display:none}
 body.playing .console{padding-bottom:6px;margin-bottom:6px}
+
+/* 2026-11-16 tighten up: a window you can actually see, a route bar inside it, a countdown at liftoff */
+#flightWindow{height:clamp(130px,26svh,300px)}
+body.playing #flightWindow{height:clamp(84px,14svh,150px)}
+body.launching #flightWindow{height:calc(100svh - 140px);transition:height .6s ease}
+body.launching .console{flex:none;height:60px;overflow:hidden}
+.flight-hud{font-size:12px;font-weight:600;letter-spacing:.1em;color:#e4eefa;inset:12px 26px auto}
+.orbit-label{bottom:34px;font-size:14px;font-weight:600}
+body.playing .flight-hud{inset:8px 22px auto;font-size:11px}
+body.playing .orbit-label{display:none}
+.route-strip{position:absolute;left:5%;right:5%;bottom:12px;height:14px;pointer-events:none}
+.rs-line,.rs-done{position:absolute;left:0;top:6px;height:2px;background:#ffffff40;width:100%;border-radius:2px}
+.rs-done{background:linear-gradient(90deg,#7fe0c2,#ffd37a);width:0;transition:width .8s}
+.rs-stop{position:absolute;top:0;transform:translateX(-50%)}
+.rs-stop b{display:block;width:6px;height:6px;margin:4px auto 0;border-radius:50%;background:#9fb1c6;box-shadow:0 0 0 2px #01050d}
+.rs-stop.past b{background:#ffd37a}
+.rs-stop em{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);font:600 10px/1 system-ui;font-style:normal;color:#c9d7e6;white-space:nowrap;text-shadow:0 1px 4px #000}
+.rs-rocket{position:absolute;top:-6px;transform:translateX(-50%) rotate(45deg);font-size:16px;transition:left .8s;filter:drop-shadow(0 0 6px #ffb347)}
+body.playing .route-strip{bottom:8px}
+body.playing .rs-stop em{display:none}
+#countdown{position:absolute;inset:0;display:grid;place-items:center;font:800 clamp(60px,18svh,160px)/1 system-ui;color:#fff;text-shadow:0 4px 30px #000,0 0 40px #ffb34788;cursor:pointer}
+#countdown.cd-num{animation:cdpop .8s ease-out}
+#countdown.cd-go{color:#ffd37a;letter-spacing:.08em;font-size:clamp(40px,11svh,110px);animation:cdpop .9s ease-out}
+@keyframes cdpop{from{transform:scale(1.6);opacity:0}30%{opacity:1}to{transform:scale(1)}}
+@media(max-width:700px){#flightWindow{height:120px}body.playing #flightWindow{height:96px}body.launching #flightWindow{height:calc(100svh - 120px)}.flight-hud{font-size:9px}.rs-stop em{font-size:8px}.rs-stop:nth-child(n+5):not(:last-of-type) em{display:none}}
+@media(max-height:820px){.lobby{padding-top:14px}.lobby h1{font-size:clamp(30px,5.4svh,44px);margin:6px 0}.lobby .lede{margin-bottom:6px}.lobby .route{margin-top:8px}.lobby .launch-row{margin-top:8px}}

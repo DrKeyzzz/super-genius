@@ -5,7 +5,7 @@ window.SpaceFlight=(()=>{
  const cv=document.getElementById('space'),cx=cv.getContext('2d');let w,h,dpr,last=0;
  const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
  const L=600;   // the whole journey (all three tiers) in world units; one challenge is about 10
- let Z=0,goal=0,speed=0,blast=0,confetti=0,shake=0,flare=0,rivals=[],passedMsg=0;
+ let Z=0,goal=0,speed=0,blast=0,confetti=0,shake=0,flare=0,rivals=[],passedMsg=0,lift=0,liftGoal=0,kick=0;
  const planets=[{at:.1,n:'Moon',r:2.2,a:-.6,c:['#f4f4f4','#b9b9c0','#5b5b65']},{at:.25,n:'Mars',r:2,a:2.4,c:['#ffb27a','#d2552b','#6e2412']},{at:.35,n:'Asteroid belt',belt:1},
   {at:.5,n:'Jupiter',r:5.5,a:-2.3,c:['#f1e2c8','#c99a6b','#7a4a2a'],bands:1},{at:.6,n:'Saturn',r:4.5,a:.7,c:['#f6e3b4','#d7b878','#7a6338'],ring:1},
   {at:.7,n:'Uranus',r:3.2,a:-.4,c:['#d8fbff','#7fd6e0','#2f7f8c']},{at:.85,n:'Neptune',r:3.2,a:2.8,c:['#9fb8ff','#3f5fe0','#172a7a']},{at:.98,n:'Beyond',r:1.1,a:1.5,c:['#f2e2d0','#b89c86','#5e4a3c']}];
@@ -18,7 +18,7 @@ window.SpaceFlight=(()=>{
  function proj(a,r,d){const v=VP(),f=F()/Math.max(.05,d);return[v.x+Math.cos(a)*r*f,v.y+Math.sin(a)*r*f*.6,f]}
  const fadeIn=d=>Math.min(1,Math.max(0,(d-.5)/1.5));
  function ball(x,y,R,c){const g=cx.createRadialGradient(x-R*.4,y-R*.4,R*.08,x,y,R);c.forEach((col,i)=>g.addColorStop(i/(c.length-1),col));cx.fillStyle=g;cx.beginPath();cx.arc(x,y,R,0,7);cx.fill()}
- function earth(t){const d=Z+4,v=VP(),R=F()*2/d;if(R<1)return;ball(v.x,v.y,R,['#8fd0ff','#2a6fd6','#0b2a66']);
+ function earth(t){const d=Z+4+lift,v=VP(),R=F()*2/d;if(R<1)return;ball(v.x,v.y,R,['#8fd0ff','#2a6fd6','#0b2a66']);
   cx.save();cx.beginPath();cx.arc(v.x,v.y,R,0,7);cx.clip();const spin=t/40000;cx.fillStyle='#3d9a5a';
   [[-.35,-.2,.32],[.3,.15,.28],[-.05,.45,.2],[.45,-.4,.15],[1.2,.1,.3]].forEach(([a,b,r])=>{const x=((a+spin+1.5)%3)-1.5;cx.beginPath();cx.ellipse(v.x+x*R,v.y+b*R,r*R,r*R*.7,a*3,0,7);cx.fill()});
   cx.fillStyle='rgba(255,255,255,.4)';[[.1,-.5,.3],[-.4,.3,.25]].forEach(([a,b,r])=>{const x=((a+spin*1.6+1.5)%3)-1.5;cx.beginPath();cx.ellipse(v.x+x*R,v.y+b*R,r*R,r*R*.22,0,0,7);cx.fill()});cx.restore();
@@ -38,7 +38,7 @@ window.SpaceFlight=(()=>{
   cx.fillStyle=r.me?'#a5e7d8':'#ffe27a';cx.font='800 11px system-ui';cx.textAlign='center';cx.textBaseline='middle';cx.fillText(r.name,0,1);cx.restore()}
  function frame(t){requestAnimationFrame(frame);const dt=Math.min(.05,(t-last)/1000)||.016;last=t;
   // ease toward the goal distance: a burst of speed on every right answer, then a gentle cruise
-  const gap=goal-Z;speed=reduced?gap*8:Math.max(gap*1.6,0);Z+=Math.min(gap,speed*dt);drift+=dt*(1.2+speed*.9);
+  const gap=goal-Z;speed=reduced?gap*8:Math.max(gap*1.6,0);Z+=Math.min(gap,speed*dt);drift+=dt*(1.2+speed*.9+kick*14);kick=Math.max(0,kick-dt*.45);lift+=(liftGoal-lift)*Math.min(1,dt*1.3);
   blast=Math.max(0,blast-dt);confetti=Math.max(0,confetti-dt);shake*=Math.exp(-dt*6);flare*=Math.exp(-dt*2);passedMsg=Math.max(0,passedMsg-dt);
   const sx=(Math.random()-.5)*shake,sy=(Math.random()-.5)*shake;cx.setTransform(dpr,0,0,dpr,sx*dpr,sy*dpr);
   const sky=Math.min(1,Z/12),g=cx.createRadialGradient(VP().x,VP().y,0,VP().x,VP().y,Math.max(w,h));g.addColorStop(0,`rgb(${Math.round(40-34*sky)},${Math.round(90-82*sky)},${Math.round(170-150*sky)})`);g.addColorStop(1,'#030915');cx.fillStyle=g;cx.fillRect(-20,-20,w+40,h+40);
@@ -51,7 +51,10 @@ window.SpaceFlight=(()=>{
   if(blast){cx.fillStyle=`rgba(255,${Math.floor(60+blast*60)},30,${Math.min(.95,blast*.5)})`;cx.fillRect(0,0,w,h);const v=VP();for(let i=0;i<40;i++){const a=i*2.399,rr=(2.4-blast)*(30+i*5);cx.fillStyle=i%2?'#ffdf90':'#a2b2c5';cx.fillRect(v.x+Math.cos(a)*rr,v.y+Math.sin(a)*rr,5+i%7,4)}}
   if(confetti){cx.fillStyle='#ffe6a5';for(let i=0;i<65;i++){const x=(i*137.5)%w,y=((t/12+i*35)%h);cx.fillRect(x,y,3,7)}}
   label()}
- function label(){if(passedMsg)return;const v=Z/L,next=planets.find(p=>p.at*L>Z+.5),ahead=rivals.filter(r=>at(r)>Z+.5).sort((a,b)=>a.v-b.v)[0];
+ const strip=document.getElementById('routeStrip');let rocket=null;
+ if(strip){strip.innerHTML='<i class="rs-line"></i><i class="rs-done"></i>'+[{n:'Earth',at:0},...planets.filter(p=>!p.belt)].map(p=>`<span class="rs-stop" style="left:${p.at*100}%"><b></b><em>${p.n==='Beyond'?'Pluto':p.n}</em></span>`).join('')+'<span class="rs-rocket" aria-hidden="true">🚀</span>';rocket=strip.querySelector('.rs-rocket')}
+ function route(){if(!rocket)return;const v=Math.min(1,Z/L);rocket.style.left=v*100+'%';strip.querySelector('.rs-done').style.width=v*100+'%';strip.querySelectorAll('.rs-stop').forEach(e=>e.classList.toggle('past',parseFloat(e.style.left)<=v*100+.5))}
+ function label(){route();if(passedMsg)return;const v=Z/L,next=planets.find(p=>p.at*L>Z+.5),ahead=rivals.filter(r=>at(r)>Z+.5).sort((a,b)=>a.v-b.v)[0];
   const loc=[...planets].filter(p=>p.at*L<=Z+.5).at(-1);document.getElementById('location').textContent=loc?loc.n.toUpperCase()+' PASSAGE':'EARTH DEPARTURE';
   document.getElementById('orbitLabel').textContent=ahead?`Next to pass · ${ahead.name}`:next?(Z<1?'Earth falls away behind you.':'Next · '+next.n):'Beyond the solar system';}
  // a pilot sits just before the spot their best flight reached, so tying them flies you past and they fall behind
@@ -65,5 +68,6 @@ window.SpaceFlight=(()=>{
   celebrate(){confetti=12;goal=1.1*L},
   rivals(list){rivals=(list||[]).filter(r=>r&&r.name&&r.v>0)},
   places(){return planets.map(p=>({n:p.n,at:p.at}))},
-  reset(){goal=0;Z=0;blast=0;passedMsg=0;document.getElementById('location').textContent='EARTH DEPARTURE';document.getElementById('orbitLabel').textContent='Your next great leap.'}};
+  liftoff(){kick=3;liftGoal=10;flare=1;shake=reduced?0:8},
+  reset(){goal=0;Z=0;lift=0;liftGoal=0;kick=0;blast=0;passedMsg=0;document.getElementById('location').textContent='EARTH DEPARTURE';document.getElementById('orbitLabel').textContent='Your next great leap.'}};
 })();
