@@ -73,6 +73,7 @@
  }
  function rooftop(){
   window.__superKeyed=config.tier===2&&config.kind!=='rhythm';   // expert sight reading: a real key signature from bar 1, never C
+  if(config.kind!=='rhythm'&&navigator.requestMIDIAccess&&typeof connectMidi==='function')try{connectMidi()}catch{}   // a plugged-in keyboard plays the notes
   if(window.__superKeyed){const hard=EXPERT_KEYS.filter(id=>Math.abs((MAJOR.find(k=>k.id===id)||{}).sig||0)>=3);if(hard.length)EXPERT_KEYS.splice(0,EXPERT_KEYS.length,...hard)}   // 3+ sharps or flats
   const cfg={style:config.kind==='rhythm'?'rhythm':'keys',diff:['medium','hard','expert'][config.tier],clef:config.clef||'treble',mode:'practice',practiceBpm:[64,64,64][config.tier]};lastConfig=cfg;document.body.dataset.view='game';startGame(cfg);G.warmLeft=0;G.heardCheck=true;G.gotInput=true;
   const monitor=setInterval(()=>{if(done){clearInterval(monitor);G.running=false;return}if(!active)return;const st=G.stats;const segment=G.attacks.filter(a=>a.b>=0&&a.b<8),end=Math.max(8,...segment.map(a=>a.b+a.len));if(G.t>=end+.35){for(const a of segment){if(!a.h&&a.pressAt!=null)finishHold(a,end)}const hits=segment.filter(a=>a.j&&a.j!=='M'&&a.j!=='W'&&a.h!=='early').length;const accuracy=hits/Math.max(1,segment.length+st.extra);finish(hits>0&&accuracy>=[.8,.9,.95][config.tier],`${Math.round(accuracy*100)}% over two bars · ${hits}/${segment.length} notes held correctly`);G.running=false}},50);

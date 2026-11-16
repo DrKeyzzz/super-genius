@@ -17,7 +17,7 @@
  ['ear','bluff','Crooked Clara','Compare the written cards with what Clara plays. Decide whether she is fair or cheating.'],
  ['scale','signature','Key signatures','Read, count or write the key signature. Follow the task on the Scale Quest screen.'],
  ['brain','intervals','Intervals by ear','Name the interval you hear. Includes descending and harmonic intervals.'],
- ['roof','notes','Rooftop sight reading','Two bars of pitched sight reading. Use the on-screen piano or its keyboard shortcuts; hold notes for their written length.'],
+ ['roof','notes','Rooftop sight reading','Two bars of pitched sight reading on your MIDI keyboard; hold notes for their written length. (Only in flights with a MIDI keyboard plugged in.)'],
  ['tidal','piano','Play the boats','Read three staff notes and play them on the piano in the exact octave.'],
  ['brain','synapse','Sharp or Flat?','Five questions, each closer than the last. Two pitches play once (no replays): was the second sharp or flat? Miss one and the channel is lost. The last one is Hairline, 3 cents.'],
  ['scale','degree-name','Name the degree','Read the shown staff note or piano key and identify its scale degree.'],

@@ -61,11 +61,22 @@
  function loadPilots(){if(typeof GeniusBoard==='undefined')return;const me=sid;GeniusBoard.rows('class').then(r=>r||GeniusBoard.rows('world')).then(r=>{pilots=(r||[]).filter(x=>x.sid!==me&&x.correct>0).map(x=>({name:x.name.toUpperCase(),v:x.correct/N}));if(!run)SpaceFlight.rivals(rivals())}).catch(()=>{})}
  function rivals(){const list=pilots.slice();if(saved.best)list.push({name:'YOUR BEST',v:saved.best.correct/N,me:true});return list}
  function saveFlight(){if(!run||run.lab)return;saved.flight={...run};persist()}
- function begin(lab=false){removeFrame();if(lab){run={index:0,lives:3,correct:0,order:[$('labChannel').value],lab:true,started:Date.now()}}else if(saved.flight){run={...saved.flight}}else{run={index:0,lives:3,correct:0,order:deck().map(c=>c.id),lab:false,started:Date.now(),log:[]}}if(run.lives===0||run.index>=run.order.length){finish();return}if(!lab&&run.index===0&&SpaceFlight.liftoff)liftoff(loadChannel);else loadChannel()}
+ // Rooftop sight reading on a tiny on-screen piano is not fair: it is in the flight only when a MIDI keyboard is plugged in;
+ // otherwise a second Rooftop rhythm takes its place, so every flight still has 20 challenges (added 2026-11-16)
+ let midiOn=false,midiAccess=null;
+ function watchMidi(ask){if(typeof navigator==='undefined'||!navigator.requestMIDIAccess)return Promise.resolve(false);
+  const go=()=>navigator.requestMIDIAccess({sysex:false}).then(a=>{midiAccess=a;const upd=()=>{midiOn=[...a.inputs.values()].some(i=>i.state==='connected');renderMidi()};a.onstatechange=upd;upd();return midiOn}).catch(()=>{renderMidi();return false});
+  if(ask)return go();
+  return(navigator.permissions?navigator.permissions.query({name:'midi'}).then(p=>p.state==='granted'?go():(renderMidi(),false)):Promise.resolve(renderMidi())).catch(()=>false)}
+ function renderMidi(){const el=$('midiNote');if(!el)return;el.replaceChildren();
+  if(midiOn){el.textContent='🎹 MIDI keyboard connected: Rooftop sight reading is in your flight.';return}
+  if(typeof navigator==='undefined'||!navigator.requestMIDIAccess){el.textContent='';return}
+  const b=document.createElement('button');b.type='button';b.className='linkish';b.textContent='🎹 Have a MIDI keyboard? Connect it';b.onclick=()=>watchMidi(true).then(on=>{if(!on&&midiAccess)el.firstChild.textContent='🎹 No keyboard found. Plug it in, then try again.'});el.append(b,document.createTextNode(' to add Rooftop sight reading.'))}
+ function begin(lab=false){removeFrame();if(lab){run={index:0,lives:3,correct:0,order:[$('labChannel').value],lab:true,started:Date.now()}}else if(saved.flight){run={...saved.flight}}else{run={index:0,lives:3,correct:0,order:deck().map(c=>c.id==='roof-notes'&&!midiOn?'roof-rhythm':c.id),lab:false,started:Date.now(),log:[]}}if(run.lives===0||run.index>=run.order.length){finish();return}if(!lab&&run.index===0&&SpaceFlight.liftoff)liftoff(loadChannel);else loadChannel()}
  // a new flight starts with a countdown in a big window, so everyone sees the rocket leave Earth
  function liftoff(then){const cd=$('countdown'),b=document.body;show('lobby');$('lobby').hidden=true;b.classList.add('launching');$('channelName').textContent='LAUNCH';cd.hidden=false;let n=3,done=false;const go=()=>{if(done)return;done=true;clearInterval(t);cd.hidden=true;b.classList.remove('launching');then()};const tick=()=>{if(n>0){cd.textContent=n;cd.className='cd-num'}else if(n===0){cd.textContent='LIFTOFF';cd.className='cd-go';SpaceFlight.liftoff()}else go();n--};tick();const t=setInterval(tick,800);setTimeout(()=>{if(!done)go()},5200);cd.onclick=go}
  function loadChannel(){removeFrame();settled=false;loaded=false;current=catalog.find(c=>c.id===run.order[run.index]);token=crypto.randomUUID();sync();saveFlight();show('switching');$('channelName').textContent=current.name.toUpperCase();$('switchTitle').textContent=current.name;$('switchDetail').textContent=current.label+' · Expert';
-  frame=document.createElement('iframe');frame.title=current.name+' · '+current.label;frame.setAttribute('allow','autoplay');frame.src='channels/'+current.engine+'.html?v=10';$('channelHost').replaceChildren(frame);
+  frame=document.createElement('iframe');frame.title=current.name+' · '+current.label;frame.setAttribute('allow','autoplay; midi');frame.src='channels/'+current.engine+'.html?v=11';$('channelHost').replaceChildren(frame);
   // The native page must boot and acknowledge configuration before the monitor opens.
   bootTimer=setTimeout(()=>channelError('This channel did not load. Reload it to continue; no life has been lost.'),14000);
  }
@@ -131,5 +142,5 @@
   if(!prof)boardKind='world';boardRows()};
  document.querySelectorAll('#boardTabs button').forEach(b=>b.onclick=()=>{boardKind=b.dataset.k;boardRows()});$('boardBack').onclick=home;
 catalog.forEach(c=>$('labChannel').add(new Option(c.name+' · '+c.label,c.id)));
- addEventListener('message',receive);addEventListener('pagehide',saveFlight);home();if(location.hash==='#leaderboard')$('boardBtn').click();   // the home page's red Leaderboard button opens straight to the board
+ addEventListener('message',receive);watchMidi(false);addEventListener('pagehide',saveFlight);home();if(location.hash==='#leaderboard')$('boardBtn').click();   // the home page's red Leaderboard button opens straight to the board
 })();

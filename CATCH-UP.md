@@ -87,3 +87,6 @@ Audit of all six: Scale Quest + Tidal already hard-keyed (721a69f). New: Rooftop
 
 ## 2026-10-29: privacy build (class locked board + World board with "First L.")
 board.js: class board = classes/<active code>/genius_scores/<code>_<sid> (same best-only doc, no class_code query); World = world_scores/genius/runs {nick "First L.", level "17/20 2 lives 12:34 R2", score = right*40000 + lives*10000 + (9999 - seconds), created_at}, read orderBy score desc limit 30, deduped by nick, top 10. One batch per new best (class copy + World copy); no class = World copy only (no more top-level none_ docs). channels/ untouched: they run as guests with CSP connect-src 'none', so they never reach Firestore. board.js?v=2. Not live until the privacy rules are pasted. Committed, NOT published.
+
+## 2026-11-16: Rooftop sight reading only with a MIDI keyboard (his ask: "impossible on a tiny piano")
+game.js watchMidi/renderMidi: checks MIDI only if permission was already given (no prompt); launch screen line "Have a MIDI keyboard? Connect it" (asks on click). begin(): without a connected keyboard roof-notes becomes a second roof-rhythm (flight stays 20). iframe allow "autoplay; midi"; bridge rooftop() calls connectMidi() for sight reading. Catalog text says MIDI. Bridge ?v=11. Tests pass; checked a flight: 20 challenges, no roof-notes, two roof-rhythm. Committed, NOT published.
