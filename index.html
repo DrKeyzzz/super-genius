@@ -537,6 +537,7 @@ const MTG_HIST = (() => {
    ★ on the corner, +10% points per Encore (max +50%); saved as encores / encore_xp. Encore-only items: later.
    Step 4b (2026-11-16): mastery read from each game's own saves (see the mastery section), kept in mtg_mastery_v1:<sid>; unlocks rank gates
    and the Gold Piano Jacket, Detective Coat and Captain's Hat.
+   Step 5a (2026-11-16): a teacher can turn avatars off for a class (classes/<code>.avatars_off, dashboard switch); checked once per tab.
    Later steps: ranks, avatars on boards and reports, a class setting to turn avatars off. */
 (function(){
   var me = document.currentScript, MOUNT = (me && me.getAttribute('data-mount')) || '.mtg-home';
@@ -1125,11 +1126,27 @@ function shade(hex, f) { const n = parseInt(hex.slice(1), 16); const c = s => Ma
   }
   corner.addEventListener('click', openBuilder);
 
-  function start(){ if (!place()) return false; drawAll(); return true; }
-  if (!start()) {
-    var tries = 0, iv = setInterval(function(){ if (start() || ++tries > 40) clearInterval(iv); }, 250);   // pages that build their header late
+  // A teacher can turn avatars off for a class (classes/<code>.avatars_off, set in the dashboard): then nothing shows and nothing
+  // is earned, and the game keeps its old icon. Checked once per tab (sessionStorage mtg_avatar_off_v1:<code>).
+  var CODE = P ? activeCode(P) : '';
+  function avatarsOff(cb){
+    if (!CODE || LOCAL) return cb(false);
+    var k = 'mtg_avatar_off_v1:' + CODE, v = null; try { v = sessionStorage.getItem(k); } catch(e){}
+    if (v !== null) return cb(v === '1');
+    try { fetch(FS + 'classes/' + encodeURIComponent(CODE) + '?key=' + FKEY + '&mask.fieldPaths=avatars_off').then(function(r){ return r.ok ? r.json() : null; }).then(function(d){
+      var off = !!(d && d.fields && d.fields.avatars_off && d.fields.avatars_off.booleanValue);
+      try { sessionStorage.setItem(k, off ? '1' : '0'); } catch(e){}
+      cb(off);
+    }).catch(function(){ cb(false); }); } catch(e){ cb(false); }
   }
-  window.MTGAvatar = { wallet: function(){ return { coins: W.coins, points: W.points }; }, look: function(){ return Object.assign({}, look); }, svg: function(o){ return avatar(look, o || {}); }, open: openBuilder };
+  var OFF = false;
+  function start(){ if (OFF) return true; if (!place()) return false; drawAll(); return true; }
+  avatarsOff(function(off){
+    if (off) { OFF = true; P = null; corner.remove(); return; }   // P = null: no earning, no saving
+    if (!start()) { var tries = 0, iv = setInterval(function(){ if (start() || ++tries > 40) clearInterval(iv); }, 250); }   // pages that build their header late
+  });
+  window.MTGAvatar = { off: function(){ return OFF; }, signedIn: function(){ return !!P; }, rank: function(){ return P ? { n: rankNow() + 1, name: RANKS[rankNow()][1], encores: W.encores || 0 } : null; },
+    wallet: function(){ return { coins: W.coins, points: W.points }; }, look: function(){ return Object.assign({}, look); }, svg: function(o){ o = o || {}; if (o.rank == null && P) o.rank = rankNow(); return avatar(look, o); }, open: openBuilder };
 
 })();
 </script>
