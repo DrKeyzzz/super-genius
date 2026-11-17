@@ -188,126 +188,7 @@ const MTG_HIST = (() => {
   };
 })();
 </script>
-<script src="catalog.js?v=6"></script><script src="space.js?v=6"></script><script src="fx.js?v=3"></script><script src="board.js?v=2"></script><script src="game.js?v=29"></script><!-- MTG_ACTIVITY start: identical in every game, only data-game changes. Master copy: Music Games/shared/mtg-activity.snippet.html -->
-<script id="mtg-activity" data-game="genius">
-/* Activity log (added 2026-11-01; time and progress 2026-11-02). Once per game per browser tab, 20 seconds after the page
-   opens (so quick bounces don't count), the page adds one record to Firestore activity/: who (first name + last initial,
-   or Guest), the active class code, the game, the device (phone / tablet / computer, system, browser, window width) and
-   the server time. While the visit goes on it keeps a tally from the game's 'mtghist' events (sent by MTG_HIST.note/run,
-   guests too): answers, correct, rounds, best score, furthest level, seconds on screen and seconds playing (gaps between
-   answers under 2 minutes) and the parts played (Brainwaves areas: the game id each answer was saved under, when it
-   isn't the page's own id). It updates the same record every 3 minutes when something changed and once when the page is
-   hidden or closed. Nobody can read the records except the admin (dashboard Activity tab). No sign-in, no SDK: REST calls.
-   On localhost it sends nothing unless the address has ?activity=1. */
-(function(){
-  var me = document.currentScript, GAME = me && me.getAttribute('data-game');
-  if (!GAME || window.MTGActivity) return;
-  window.MTGActivity = true;
-  // The Support and Privacy links (Privacy 2026-11-04, Support 2026-11-06): next to the Feedback button when the page has one,
-  // else in a small footer of their own.
-  function privacyLink(){
-    if (document.querySelector('.mtg-privacy')) return;
-    function link(href, text, cls, color){ var a = document.createElement('a'); a.href = href; a.className = cls; a.textContent = text;
-      a.style.cssText = 'font-size:14px;color:' + color + ';text-decoration:underline;align-self:center'; return a; }
-    var sup = link('/support/', '☕ Support', 'mtg-support', '#ffc85c'), a = link('/privacy/', 'Privacy', 'mtg-privacy', 'var(--dim,var(--muted,#9aa7bb))');
-    var foot = document.querySelector('.mtgfb-foot');
-    if (foot) { foot.style.gap = '18px'; foot.style.alignItems = 'center'; foot.style.flexWrap = 'wrap'; foot.appendChild(sup); foot.appendChild(a); return; }
-    foot = document.createElement('div'); foot.style.cssText = 'display:flex;justify-content:center;gap:18px;padding:16px 12px 26px';
-    foot.appendChild(sup); foot.appendChild(a); document.body.appendChild(foot);
-  }
-  if (document.readyState === 'complete') setTimeout(privacyLink, 500); else addEventListener('load', function(){ setTimeout(privacyLink, 500); });
-  if (/^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname) && !/[?&]activity=1\b/.test(location.search)) return;
-  var KEY = 'AIzaSyDU9vbCWJ4yWuD8bAX984DmQF4dvo13BHs', DOCS = 'projects/rhythm-trainer-fc313/databases/(default)/documents';
-  var SEEN = 'mtg_act_v1:' + GAME;
-  try { if (sessionStorage.getItem(SEEN)) return; } catch(e){ return; }
-
-  // ---------- the tally for this visit ----------
-  var T = { answers: 0, correct: 0, rounds: 0, best: 0, level: 0 }, playMs = 0, lastAns = 0, pageMs = 0, visSince = document.hidden ? 0 : Date.now();
-  var PARTS = [];   // parts of the game played this visit (Brainwaves areas), in the order first played
-  var id = '', sent = '';   // the record's id once created; the counters last sent
-  function pageS(){ return Math.round((pageMs + (visSince ? Date.now() - visSince : 0)) / 1000); }
-  addEventListener('mtghist', function(e){
-    var d = e.detail || {};
-    if (d.game && d.game !== GAME && PARTS.indexOf(String(d.game)) < 0) PARTS.push(String(d.game).slice(0, 20));
-    if (d.type === 'note') {
-      var now = Date.now();
-      if (lastAns && now - lastAns < 120000) playMs += now - lastAns;   // a pause over 2 minutes isn't playing
-      lastAns = now; T.answers++; if (d.ok) T.correct++;
-    } else if (d.type === 'run') {
-      var r = d.r || {};
-      T.rounds++; T.best = Math.max(T.best, Math.round(+r.score || 0)); T.level = Math.max(T.level, Math.round(+r.level || 0));
-    }
-  });
-  function counters(){
-    return { answers: T.answers, correct: T.correct, rounds: T.rounds, best: Math.min(T.best, 1e9), level: Math.min(T.level, 10000),
-      page_s: Math.min(pageS(), 86400), play_s: Math.min(Math.round(playMs / 1000), 86400) };
-  }
-
-  // ---------- who is playing (shared sign-in), read when the record is created ----------
-  function who(){
-    try {
-      if (sessionStorage.getItem('music_guest') === '1') return null;
-      var p = JSON.parse(localStorage.getItem('rdt_profile_v1') || 'null');
-      return p && p.first && p.init ? p : null;
-    } catch(e){ return null; }
-  }
-  function activeCode(p){
-    var l = Array.isArray(p.classes) && p.classes.length ? p.classes : (p.classCode ? [{ code: p.classCode }] : []);
-    l = l.filter(function(c){ return c && c.code; });
-    return l.length ? String(l[0].code).slice(0, 20) : '';
-  }
-  function device(){
-    var u = navigator.userAgent || '', touch = navigator.maxTouchPoints > 1;
-    var os = /iPhone|iPod/.test(u) ? 'iPhone' : /iPad/.test(u) || (/Macintosh/.test(u) && touch) ? 'iPad' : /Android/.test(u) ? 'Android'
-      : /CrOS/.test(u) ? 'Chromebook' : /Mac/.test(u) ? 'Mac' : /Windows/.test(u) ? 'Windows' : /Linux/.test(u) ? 'Linux' : 'Other';
-    var kind = os === 'iPhone' || (os === 'Android' && /Mobile/.test(u)) ? 'Phone' : os === 'iPad' || os === 'Android' ? 'Tablet' : 'Computer';
-    var br = /Edg\//.test(u) ? 'Edge' : /CriOS|Chrome\//.test(u) ? 'Chrome' : /FxiOS|Firefox\//.test(u) ? 'Firefox' : /Safari\//.test(u) ? 'Safari' : '';
-    return (kind + ' · ' + os + (br ? ' · ' + br : '') + ' · ' + Math.round(innerWidth) + 'px').slice(0, 40);
-  }
-
-  // ---------- sending ----------
-  function ints(c){ var f = {}; for (var k in c) f[k] = { integerValue: String(c[k]) }; return f; }
-  function parts(){ return PARTS.join(',').slice(0, 120); }
-  function commit(write, done){
-    try {
-      fetch('https://firestore.googleapis.com/v1/' + DOCS + ':commit?key=' + KEY, {
-        method: 'POST', keepalive: true, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ writes: [write] })
-      }).then(function(r){ if (r.ok && done) done(); }).catch(function(){});
-    } catch(e){}
-  }
-  function create(){
-    try { if (sessionStorage.getItem(SEEN)) return; sessionStorage.setItem(SEEN, '1'); } catch(e){ return; }
-    var p = who(), f = String(p ? p.first : ''), c = counters(), fields = ints(c), newId = Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
-    fields.name = { stringValue: p ? (f.charAt(0).toUpperCase() + f.slice(1) + ' ' + p.init + '.').slice(0, 24) : 'Guest' };
-    fields.sid = { stringValue: p ? (p.first + p.init).toLowerCase().replace(/[^a-z]/g, '').slice(0, 16) : '' };
-    fields.class_code = { stringValue: p ? activeCode(p) : '' };
-    fields.game = { stringValue: GAME };
-    fields.device = { stringValue: device() };
-    fields.parts = { stringValue: parts() };
-    var snap = JSON.stringify(c) + parts();
-    commit({ update: { name: DOCS + '/activity/' + newId, fields: fields },
-      updateTransforms: [{ fieldPath: 'at', setToServerValue: 'REQUEST_TIME' }, { fieldPath: 'seen', setToServerValue: 'REQUEST_TIME' }],
-      currentDocument: { exists: false } }, function(){ id = newId; sent = snap; });
-  }
-  function update(){
-    if (!id) return;
-    var c = counters(), snap = JSON.stringify(c) + parts(), f = ints(c);
-    if (snap === sent) return;
-    f.parts = { stringValue: parts() };
-    commit({ update: { name: DOCS + '/activity/' + id, fields: f }, updateMask: { fieldPaths: Object.keys(f) },
-      updateTransforms: [{ fieldPath: 'seen', setToServerValue: 'REQUEST_TIME' }], currentDocument: { exists: true } }, function(){ sent = snap; });
-  }
-  document.addEventListener('visibilitychange', function(){
-    if (document.hidden) { if (visSince) { pageMs += Date.now() - visSince; visSince = 0; } update(); }
-    else if (!visSince) visSince = Date.now();
-  });
-  addEventListener('pagehide', update);
-  setTimeout(create, 20000);
-  setInterval(update, 180000);
-})();
-</script>
-<!-- MTG_ACTIVITY end -->
-<!-- MTG_AVATAR start: identical in every game, only data-mount changes. Master copy: Music Games/shared/mtg-avatar.snippet.html -->
+<script src="catalog.js?v=6"></script><script src="space.js?v=6"></script><script src="fx.js?v=3"></script><script src="board.js?v=2"></script><script src="game.js?v=29"></script><!-- MTG_AVATAR start: identical in every game, only data-mount changes. Master copy: Music Games/shared/mtg-avatar.snippet.html -->
 <style id="mtg-avatar-css">
 /* Avatar (build step 1, 2026-11-16): the drawing and moves come from the approved preview (Claude outputs/avatar-preview.html);
    keyframes are prefixed mav- so they never clash with a game's own. */
@@ -1666,6 +1547,125 @@ function shade(hex, f) { const n = parseInt(hex.slice(1), 16); const c = s => Ma
 })();
 </script>
 <!-- MTG_AVATAR end -->
+<!-- MTG_ACTIVITY start: identical in every game, only data-game changes. Master copy: Music Games/shared/mtg-activity.snippet.html -->
+<script id="mtg-activity" data-game="genius">
+/* Activity log (added 2026-11-01; time and progress 2026-11-02). Once per game per browser tab, 20 seconds after the page
+   opens (so quick bounces don't count), the page adds one record to Firestore activity/: who (first name + last initial,
+   or Guest), the active class code, the game, the device (phone / tablet / computer, system, browser, window width) and
+   the server time. While the visit goes on it keeps a tally from the game's 'mtghist' events (sent by MTG_HIST.note/run,
+   guests too): answers, correct, rounds, best score, furthest level, seconds on screen and seconds playing (gaps between
+   answers under 2 minutes) and the parts played (Brainwaves areas: the game id each answer was saved under, when it
+   isn't the page's own id). It updates the same record every 3 minutes when something changed and once when the page is
+   hidden or closed. Nobody can read the records except the admin (dashboard Activity tab). No sign-in, no SDK: REST calls.
+   On localhost it sends nothing unless the address has ?activity=1. */
+(function(){
+  var me = document.currentScript, GAME = me && me.getAttribute('data-game');
+  if (!GAME || window.MTGActivity) return;
+  window.MTGActivity = true;
+  // The Privacy link (2026-11-04; the Support link was taken out 2026-11-17 until paid plans are set up): next to the Feedback button when the page has one,
+  // else in a small footer of their own.
+  function privacyLink(){
+    if (document.querySelector('.mtg-privacy')) return;
+    function link(href, text, cls, color){ var a = document.createElement('a'); a.href = href; a.className = cls; a.textContent = text;
+      a.style.cssText = 'font-size:14px;color:' + color + ';text-decoration:underline;align-self:center'; return a; }
+    var a = link('/privacy/', 'Privacy', 'mtg-privacy', 'var(--dim,var(--muted,#9aa7bb))');
+    var foot = document.querySelector('.mtgfb-foot');
+    if (foot) { foot.style.gap = '18px'; foot.style.alignItems = 'center'; foot.style.flexWrap = 'wrap'; foot.appendChild(a); return; }
+    foot = document.createElement('div'); foot.style.cssText = 'display:flex;justify-content:center;gap:18px;padding:16px 12px 26px';
+    foot.appendChild(a); document.body.appendChild(foot);
+  }
+  if (document.readyState === 'complete') setTimeout(privacyLink, 500); else addEventListener('load', function(){ setTimeout(privacyLink, 500); });
+  if (/^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname) && !/[?&]activity=1\b/.test(location.search)) return;
+  var KEY = 'AIzaSyDU9vbCWJ4yWuD8bAX984DmQF4dvo13BHs', DOCS = 'projects/rhythm-trainer-fc313/databases/(default)/documents';
+  var SEEN = 'mtg_act_v1:' + GAME;
+  try { if (sessionStorage.getItem(SEEN)) return; } catch(e){ return; }
+
+  // ---------- the tally for this visit ----------
+  var T = { answers: 0, correct: 0, rounds: 0, best: 0, level: 0 }, playMs = 0, lastAns = 0, pageMs = 0, visSince = document.hidden ? 0 : Date.now();
+  var PARTS = [];   // parts of the game played this visit (Brainwaves areas), in the order first played
+  var id = '', sent = '';   // the record's id once created; the counters last sent
+  function pageS(){ return Math.round((pageMs + (visSince ? Date.now() - visSince : 0)) / 1000); }
+  addEventListener('mtghist', function(e){
+    var d = e.detail || {};
+    if (d.game && d.game !== GAME && PARTS.indexOf(String(d.game)) < 0) PARTS.push(String(d.game).slice(0, 20));
+    if (d.type === 'note') {
+      var now = Date.now();
+      if (lastAns && now - lastAns < 120000) playMs += now - lastAns;   // a pause over 2 minutes isn't playing
+      lastAns = now; T.answers++; if (d.ok) T.correct++;
+    } else if (d.type === 'run') {
+      var r = d.r || {};
+      T.rounds++; T.best = Math.max(T.best, Math.round(+r.score || 0)); T.level = Math.max(T.level, Math.round(+r.level || 0));
+    }
+  });
+  function counters(){
+    return { answers: T.answers, correct: T.correct, rounds: T.rounds, best: Math.min(T.best, 1e9), level: Math.min(T.level, 10000),
+      page_s: Math.min(pageS(), 86400), play_s: Math.min(Math.round(playMs / 1000), 86400) };
+  }
+
+  // ---------- who is playing (shared sign-in), read when the record is created ----------
+  function who(){
+    try {
+      if (sessionStorage.getItem('music_guest') === '1') return null;
+      var p = JSON.parse(localStorage.getItem('rdt_profile_v1') || 'null');
+      return p && p.first && p.init ? p : null;
+    } catch(e){ return null; }
+  }
+  function activeCode(p){
+    var l = Array.isArray(p.classes) && p.classes.length ? p.classes : (p.classCode ? [{ code: p.classCode }] : []);
+    l = l.filter(function(c){ return c && c.code; });
+    return l.length ? String(l[0].code).slice(0, 20) : '';
+  }
+  function device(){
+    var u = navigator.userAgent || '', touch = navigator.maxTouchPoints > 1;
+    var os = /iPhone|iPod/.test(u) ? 'iPhone' : /iPad/.test(u) || (/Macintosh/.test(u) && touch) ? 'iPad' : /Android/.test(u) ? 'Android'
+      : /CrOS/.test(u) ? 'Chromebook' : /Mac/.test(u) ? 'Mac' : /Windows/.test(u) ? 'Windows' : /Linux/.test(u) ? 'Linux' : 'Other';
+    var kind = os === 'iPhone' || (os === 'Android' && /Mobile/.test(u)) ? 'Phone' : os === 'iPad' || os === 'Android' ? 'Tablet' : 'Computer';
+    var br = /Edg\//.test(u) ? 'Edge' : /CriOS|Chrome\//.test(u) ? 'Chrome' : /FxiOS|Firefox\//.test(u) ? 'Firefox' : /Safari\//.test(u) ? 'Safari' : '';
+    return (kind + ' · ' + os + (br ? ' · ' + br : '') + ' · ' + Math.round(innerWidth) + 'px').slice(0, 40);
+  }
+
+  // ---------- sending ----------
+  function ints(c){ var f = {}; for (var k in c) f[k] = { integerValue: String(c[k]) }; return f; }
+  function parts(){ return PARTS.join(',').slice(0, 120); }
+  function commit(write, done){
+    try {
+      fetch('https://firestore.googleapis.com/v1/' + DOCS + ':commit?key=' + KEY, {
+        method: 'POST', keepalive: true, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ writes: [write] })
+      }).then(function(r){ if (r.ok && done) done(); }).catch(function(){});
+    } catch(e){}
+  }
+  function create(){
+    try { if (sessionStorage.getItem(SEEN)) return; sessionStorage.setItem(SEEN, '1'); } catch(e){ return; }
+    var p = who(), f = String(p ? p.first : ''), c = counters(), fields = ints(c), newId = Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
+    fields.name = { stringValue: p ? (f.charAt(0).toUpperCase() + f.slice(1) + ' ' + p.init + '.').slice(0, 24) : 'Guest' };
+    fields.sid = { stringValue: p ? (p.first + p.init).toLowerCase().replace(/[^a-z]/g, '').slice(0, 16) : '' };
+    fields.class_code = { stringValue: p ? activeCode(p) : '' };
+    fields.game = { stringValue: GAME };
+    fields.device = { stringValue: device() };
+    fields.parts = { stringValue: parts() };
+    var snap = JSON.stringify(c) + parts();
+    commit({ update: { name: DOCS + '/activity/' + newId, fields: fields },
+      updateTransforms: [{ fieldPath: 'at', setToServerValue: 'REQUEST_TIME' }, { fieldPath: 'seen', setToServerValue: 'REQUEST_TIME' }],
+      currentDocument: { exists: false } }, function(){ id = newId; sent = snap; });
+  }
+  function update(){
+    if (!id) return;
+    var c = counters(), snap = JSON.stringify(c) + parts(), f = ints(c);
+    if (snap === sent) return;
+    f.parts = { stringValue: parts() };
+    commit({ update: { name: DOCS + '/activity/' + id, fields: f }, updateMask: { fieldPaths: Object.keys(f) },
+      updateTransforms: [{ fieldPath: 'seen', setToServerValue: 'REQUEST_TIME' }], currentDocument: { exists: true } }, function(){ sent = snap; });
+  }
+  document.addEventListener('visibilitychange', function(){
+    if (document.hidden) { if (visSince) { pageMs += Date.now() - visSince; visSince = 0; } update(); }
+    else if (!visSince) visSince = Date.now();
+  });
+  addEventListener('pagehide', update);
+  setTimeout(create, 20000);
+  setInterval(update, 180000);
+})();
+</script>
+<!-- MTG_ACTIVITY end -->
 <!-- MTG_TIME start: identical in every game, only data-mount / data-place change. Master copy: Music Games/shared/mtg-time.snippet.html -->
 <script id="mtg-time" data-mount="header nav" data-place="append">
 /* Practice time box (added 2026-10-16). Shows "Today: N min" (every game added together) and "All time" with a
