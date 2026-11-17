@@ -2036,12 +2036,16 @@ function shade(hex, f) { const n = parseInt(hex.slice(1), 16); const c = s => Ma
     if (kind === 'week') rows = rows.filter(function(r){ return r.v > 0 || r.me; });
     rows.sort(function(a, b){ return b.v - a.v || (a.me ? -1 : b.me ? 1 : a.name < b.name ? -1 : 1); });
     var lim = kind === 'world' ? 10 : 60, top = rows.slice(0, lim), html = '';
-    var line = function(r, i){ var t = tierOf(r.total); return '<li' + (r.me ? ' class="me"' : '') + '><span class="r">' + (i == null ? '–' : i + 1) + '</span><span aria-hidden="true">' + (t.ic || '·') + '</span><span class="n">' + esc(r.name) + (r.me ? '<em>You</em>' : '') + '</span><span class="v">' + fmt(r.v) + '</span></li>'; };
+    var line = function(r, i){ var t = tierOf(r.total); return '<li' + (r.me ? ' class="me"' : '') + (r.id ? ' data-avd="' + esc(r.id) + '"' : '') + '><span class="r">' + (i == null ? '–' : i + 1) + '</span><span aria-hidden="true">' + (t.ic || '·') + '</span><span class="n">' + esc(r.name) + (r.me ? '<em>You</em>' : '') + '</span><span class="v">' + fmt(r.v) + '</span></li>'; };
     top.forEach(function(r, i){ html += line(r, i); });
     if (mine && top.indexOf(mine) < 0) html += '<li class="gap" aria-hidden="true">⋯</li>' + line(mine, rows.indexOf(mine) >= lim ? null : rows.indexOf(mine));
     return html || '<li class="gap">No practice time yet. Play any game to get on the board!</li>';
   }
   var TABS = [['class', 'My class'], ['world', 'World'], ['week', 'This week']];
+  // each player's avatar head before the name (2026-11-17, David): the board's doc ids are '<class code or none>_<sid>', the same as the avatar docs.
+  // MTGAvatar.badge reads each avatar once and keeps it 10 minutes; nothing shows for players without an avatar or when avatars are off.
+  function avHeads(list){ if (!window.MTGAvatar || !MTGAvatar.badge) return; Array.prototype.forEach.call(list.querySelectorAll('li[data-avd]'), function(li){
+    var id = li.getAttribute('data-avd'), k = id.indexOf('_'), n = li.querySelector('.n'); if (k > 0 && n) MTGAvatar.badge(n, id.slice(0, k), id.slice(k + 1), 22); }); }
   function renderBoard(host, opts){
     host.classList.add('mtgtm-board');
     var s = stats();
@@ -2060,7 +2064,7 @@ function shade(hex, f) { const n = parseInt(hex.slice(1), 16); const c = s => Ma
       foot.textContent = kind === 'world' ? 'The top 10 in every class.' : kind === 'week' ? 'Minutes since Monday in ' + (s.cls ? s.cls.name : 'your class') + '.' : 'All-time practice in ' + (s.cls ? s.cls.name : 'your class') + '.';
       if (kind !== 'world' && !s.cls) { list.innerHTML = '<li class="gap">Join a class to see your class board. Add your class code on the home page.</li>'; return; }
       list.innerHTML = '<li class="gap">Loading…</li>';
-      loadRows(kind, s).then(function(rows){ if (host._tab === kind) list.innerHTML = boardRows(kind, rows, s); })
+      loadRows(kind, s).then(function(rows){ if (host._tab === kind) { list.innerHTML = boardRows(kind, rows, s); avHeads(list); } })
         .catch(function(e){ console.warn('[practice time] board:', e && (e.code || e.message)); if (host._tab === kind) list.innerHTML = '<li class="gap">Couldn\'t load the leaderboard. Check your internet connection and try again.</li>'; });
     };
     var tabs = host.querySelector('.mtgtm-tabs');
