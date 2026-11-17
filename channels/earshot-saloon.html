@@ -1,15 +1,13 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; connect-src 'none'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob:; media-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; connect-src 'none'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: blob:; media-src 'none'">
 <script src="../channel-bootstrap.js"></script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Earshot Saloon</title>
 <meta name="description" content="An ear-training card game for intervals: hear two notes, find the second one on the staff, and lasso the Interval Outlaws.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rye&family=Barlow+Semi+Condensed:wght@500;600;700&family=Outfit:wght@400;500;600;700;800&family=Zilla+Slab:wght@700&family=Noto+Music&display=swap">
+<link href="/fonts/fonts.css" rel="stylesheet">
 <script>/* Look (skin), shared by every Music Theory Game: clean (default), day or classic. ?skin=day previews and saves one. Set before the page draws so it never flashes. */
 (function () { var K = 'mtg_skin_v1', ok = ['clean', 'day', 'classic'], s = null; try { var q = new URLSearchParams(location.search).get('skin'); if (ok.indexOf(q) >= 0) { s = q; localStorage.setItem(K, q); } else s = localStorage.getItem(K); } catch (e) {} document.documentElement.dataset.skin = ok.indexOf(s) >= 0 ? s : 'clean'; })();</script>
 <style>
