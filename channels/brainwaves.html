@@ -1041,7 +1041,7 @@ const MTG_HIST = (() => {
     note(game, labels, ok) {
       edit(game, g => {
         const now = Date.now();
-        if (g.last && now - g.last < 600000) g.ms += now - g.last;     // gaps over 10 minutes aren't practice time
+        if (g.last && now - g.last < 120000) g.ms += now - g.last;     // gaps over 2 minutes aren't practice time (was 10 until 2026-11-18)
         g.last = now; g.answers++; if (ok) g.correct++;
         for (const lab of [].concat(labels || [])) { if (!lab) continue; const s = g.skills[lab] || (g.skills[lab] = [0, 0]); s[1]++; if (ok) s[0]++; }
       });
@@ -1087,7 +1087,7 @@ const BWDAY = (() => {
     note(area, ok) {
       const d = read(); if (!d) return;
       const now = Date.now();
-      if (d.last && now - d.last <= 600000) d.ms += now - d.last;   // gaps over 10 minutes don't count as practice
+      if (d.last && now - d.last <= 120000) d.ms += now - d.last;   // gaps over 2 minutes don't count as practice (was 10 until 2026-11-18)
       d.first = d.first || now; d.last = now; d.answers++; if (ok) d.correct++;
       const a = d.by_area[area] || (d.by_area[area] = [0, 0]); a[1]++; if (ok) a[0]++;
       try { localStorage.setItem(KEY, JSON.stringify(d)); } catch {}

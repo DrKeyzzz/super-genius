@@ -2673,7 +2673,7 @@ const MTG_HIST = (() => {
     note(game, labels, ok) {
       edit(game, g => {
         const now = Date.now();
-        if (g.last && now - g.last < 600000) g.ms += now - g.last;     // gaps over 10 minutes aren't practice time
+        if (g.last && now - g.last < 120000) g.ms += now - g.last;     // gaps over 2 minutes aren't practice time (was 10 until 2026-11-18)
         g.last = now; g.answers++; if (ok) g.correct++;
         for (const lab of [].concat(labels || [])) { if (!lab) continue; const s = g.skills[lab] || (g.skills[lab] = [0, 0]); s[1]++; if (ok) s[0]++; }
       });
